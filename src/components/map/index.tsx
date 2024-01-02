@@ -7,6 +7,7 @@ Title: Fantasy Game Inn
 */
 
 import { useGLTF } from "@react-three/drei"
+import { RigidBody } from "@react-three/rapier"
 import * as THREE from "three"
 import { GLTF } from "three-stdlib"
 
@@ -20,16 +21,15 @@ type GLTFResult = GLTF & {
 }
 
 export function Map(props: JSX.IntrinsicElements["group"]) {
-  const { nodes, materials } = useGLTF("/fantasy_game_inn.glb") as GLTFResult
+  const gltf = useGLTF("/scenes.glb") as GLTFResult
+  console.log(gltf)
   return (
-    <group {...props} dispose={null}>
-      <group rotation={[-Math.PI / 2, 0, 0]} scale={0.099}>
-        <group>
-          <mesh castShadow receiveShadow geometry={nodes.TheInn_bakeInn_0.geometry} material={materials.bakeInn} />
-        </group>
-      </group>
-    </group>
+    <RigidBody type="fixed">
+      <mesh scale={5}>
+        <primitive object={gltf.scene} {...props} dispose={null} />
+      </mesh>
+    </RigidBody>
   )
 }
 
-useGLTF.preload("/fantasy_game_inn.glb")
+useGLTF.preload("/scenes.glb")

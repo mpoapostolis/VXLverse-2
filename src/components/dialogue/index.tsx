@@ -10,7 +10,6 @@ export function Dialogue() {
   const [text] = useWindupString(store?.dialog ?? "", {
     pace: (char: string) => (char === " " ? 100 : 50),
   })
-  console.log(store.dialog)
   return (
     <Dialog open={Boolean(store.dialog)}>
       <DialogContent className="fixed outline-none bottom-0 z-50 w-full md:p-6">

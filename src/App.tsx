@@ -1,10 +1,8 @@
 import { Box, Environment, KeyboardControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
-import { Physics, RigidBody } from "@react-three/rapier"
+import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
-import { Suspense } from "react"
 import { Dialogue } from "./components/dialogue"
-import { Floor } from "./components/floor"
 import { Hero } from "./components/hero"
 import Lights from "./components/lights"
 import { Map } from "./components/map"
@@ -66,25 +64,18 @@ export default function App() {
         <Environment background preset="night" />
         <Lights />
         <Box onClick={() => store.setDialog("Hello world")} args={[5, 5, 5]} position={[5, 5, 2]} />
-        <Suspense fallback={null}>
-          <Physics timeStep="vary" debug>
-            <KeyboardControls map={keyboardMap}>
-              {/* @ts-expect-error: ok  */}
-              <Ecctrl animated>
-                <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
-                  <Hero />
-                </EcctrlAnimation>
-              </Ecctrl>
-            </KeyboardControls>
-            <RigidBody type="fixed" onCollisionEnter={(e) => console.log(e)} colliders="cuboid">
-              <Floor />
-            </RigidBody>
+        <Physics timeStep="vary" debug>
+          <KeyboardControls map={keyboardMap}>
+            {/* @ts-expect-error: ok  */}
+            <Ecctrl animated>
+              <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
+                <Hero />
+              </EcctrlAnimation>
+            </Ecctrl>
+          </KeyboardControls>
 
-            <RigidBody type="fixed" colliders="trimesh">
-              <Map />
-            </RigidBody>
-          </Physics>
-        </Suspense>
+          <Map />
+        </Physics>
       </Canvas>
     </div>
   )
