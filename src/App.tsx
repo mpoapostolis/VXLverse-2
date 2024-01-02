@@ -3,7 +3,6 @@ import { Canvas } from "@react-three/fiber"
 import { Physics, RigidBody } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
 import { Suspense, useState } from "react"
-
 import { Floor } from "./components/floor"
 import { Hero } from "./components/hero"
 import Lights from "./components/lights"
@@ -50,17 +49,26 @@ export default function App() {
     action4: "CharacterArmature|Punch",
   }
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+
   return (
     <div className="w-screen h-screen">
-      <EcctrlJoystick buttonNumber={3} />
       <TypeWritter text="Hello world" />
+      {isMobile ? (
+        <EcctrlJoystick buttonNumber={3} />
+      ) : (
+        <div className="fixed z-40 bottom-4  select-none pointer-events-none left-4">
+          <img className="w-44" src="/keyControls.png" alt="control keys" />
+        </div>
+      )}
+
       <Canvas shadows className="w-full h-full">
         <Environment background preset="night" />
         <Lights />
         <Suspense fallback={null}>
           <Physics timeStep="vary" debug>
             <KeyboardControls map={keyboardMap}>
-              {/* @ts-expect-error: No idea why */}
+              {/* @ts-expect-error: ok  */}
               <Ecctrl animated>
                 <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
                   <Hero scale={scale} />
