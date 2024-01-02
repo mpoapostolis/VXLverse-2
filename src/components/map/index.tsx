@@ -55,7 +55,7 @@ export function Map(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF("/unti333tled.glb") as GLTFResult
   return (
     <RigidBody type="fixed" colliders="trimesh">
-      <group {...props} dispose={null}>
+      <group {...props} dispose={null} position={[4, 0, 8]}>
         <group rotation={[-Math.PI / 2, 0, 0]}>
           <mesh
             castShadow

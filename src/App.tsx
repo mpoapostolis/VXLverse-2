@@ -1,12 +1,12 @@
-import { Box, Environment, KeyboardControls } from "@react-three/drei"
+import { Environment, KeyboardControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
 import { Dialogue } from "./components/dialogue"
+import { Ghost } from "./components/ghost"
 import { Hero } from "./components/hero"
 import Lights from "./components/lights"
 import { Map } from "./components/map"
-import { useStore } from "./lib/store"
 
 export default function App() {
   /**
@@ -48,11 +48,10 @@ export default function App() {
   }
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-  const store = useStore()
   return (
     <div className="w-screen h-screen">
       <Dialogue />
-      {/* <TypeWritter text="Hello world" /> */}
+      {/* <TypeWritter text="Sleep, the cousin of death, visits us each night." /> */}
       {isMobile ? (
         <EcctrlJoystick buttonNumber={3} />
       ) : (
@@ -63,8 +62,7 @@ export default function App() {
       <Canvas shadows className="w-full h-full">
         <Environment background preset="night" />
         <Lights />
-        <Box onClick={() => store.setDialog("Hello world")} args={[5, 5, 5]} position={[5, 5, 2]} />
-        <Physics timeStep="vary" debug>
+        <Physics timeStep="vary">
           <KeyboardControls map={keyboardMap}>
             {/* @ts-expect-error: ok  */}
             <Ecctrl animated>
@@ -75,6 +73,7 @@ export default function App() {
           </KeyboardControls>
 
           <Map />
+          <Ghost position={[24, 0, 1]} rotation={[0, (3 / Math.PI) * 5, 0]} />
         </Physics>
       </Canvas>
     </div>
