@@ -2,15 +2,15 @@ import { Box, Environment, KeyboardControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import { Physics, RigidBody } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
-import { Suspense, useState } from "react"
+import { Suspense } from "react"
+import { Dialogue } from "./components/dialogue"
 import { Floor } from "./components/floor"
 import { Hero } from "./components/hero"
 import Lights from "./components/lights"
 import { Map } from "./components/map"
-import { TypeWritter } from "./components/windText"
+import { useStore } from "./lib/store"
 
 export default function App() {
-  const [scale, setScale] = useState(1)
   /**
    * Keyboard control preset
    */
@@ -50,10 +50,11 @@ export default function App() {
   }
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-
+  const store = useStore()
   return (
     <div className="w-screen h-screen">
-      <TypeWritter text="Hello world" />
+      <Dialogue />
+      {/* <TypeWritter text="Hello world" /> */}
       {isMobile ? (
         <EcctrlJoystick buttonNumber={3} />
       ) : (
@@ -61,26 +62,24 @@ export default function App() {
           <img className="w-44" src="/keyControls.png" alt="control keys" />
         </div>
       )}
-
       <Canvas shadows className="w-full h-full">
         <Environment background preset="night" />
         <Lights />
+        <Box onClick={() => store.setDialog("Hello world")} args={[5, 5, 5]} position={[5, 5, 2]} />
         <Suspense fallback={null}>
           <Physics timeStep="vary" debug>
             <KeyboardControls map={keyboardMap}>
               {/* @ts-expect-error: ok  */}
               <Ecctrl animated>
                 <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
-                  <Hero scale={scale} />
+                  <Hero />
                 </EcctrlAnimation>
               </Ecctrl>
             </KeyboardControls>
             <RigidBody type="fixed" onCollisionEnter={(e) => console.log(e)} colliders="cuboid">
               <Floor />
             </RigidBody>
-            <RigidBody type="fixed" onCollisionEnter={(e) => console.log(e)} colliders="cuboid">
-              <Box args={[1, 1, 1]} position={[0, -0, -1]} onClick={() => setScale(scale + 1)} />
-            </RigidBody>
+
             <RigidBody type="fixed" colliders="trimesh">
               <Map />
             </RigidBody>

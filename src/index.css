@@ -74,3 +74,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+.slowFadeOut {
+  animation: slowFadeOut 2s ease-in-out forwards;
+}
+
+@keyframes slowFadeOut {
+  0% {
+    scale: 1;
+    opacity: 1;
+    display: grid;
+  }
+  100% {
+    pointer-events: none;
+    display: none;
+    opacity: 0;
+  }
+}
