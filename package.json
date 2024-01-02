@@ -11,18 +11,25 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.5",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.12",
     "@react-three/rapier": "^1.2.1",
     "@types/three": "^0.160.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
     "ecctrl": "^1.0.58",
+    "lucide-react": "^0.303.0",
     "prettier": "^3.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tailwind-merge": "^2.2.0",
+    "tailwindcss-animate": "^1.0.7",
     "three": "^0.160.0",
     "windups": "^1.2.2"
   },
   "devDependencies": {
+    "@types/node": "^20.10.6",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
