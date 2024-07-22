@@ -1,4 +1,4 @@
-import { Environment, KeyboardControls } from "@react-three/drei"
+import { Environment } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
@@ -71,13 +71,11 @@ export default function App() {
         <Environment background preset="night" />
         <Lights />
         <Physics timeStep="vary">
-          <KeyboardControls map={keyboardMap}>
-            <Ecctrl animated>
-              <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
-                <Hero />
-              </EcctrlAnimation>
-            </Ecctrl>
-          </KeyboardControls>
+          <Ecctrl animated mode="PointToMove">
+            <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
+              <Hero />
+            </EcctrlAnimation>
+          </Ecctrl>
 
           <Map />
           <Ghost position={[24, 0, 1]} rotation={[0, (3 / Math.PI) * 5, 0]} />
