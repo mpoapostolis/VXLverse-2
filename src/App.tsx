@@ -1,4 +1,4 @@
-import { Environment } from "@react-three/drei"
+import { Environment, KeyboardControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
@@ -54,9 +54,8 @@ export default function App() {
   return (
     <div className="w-screen h-screen">
       <Dialogue />
-      {/* <TypeWritter text="Sleep, the cousin of death, visits us each night." /> */}
       {isMobile ? (
-        <EcctrlJoystick buttonNumber={3} />
+        <EcctrlJoystick buttonNumber={0} />
       ) : (
         <div className="fixed z-40 bottom-4  select-none pointer-events-none left-4">
           <img className="w-44" src="/keyControls.png" alt="control keys" />
@@ -71,11 +70,13 @@ export default function App() {
         <Environment background preset="night" />
         <Lights />
         <Physics timeStep="vary">
-          <Ecctrl animated mode="PointToMove">
-            <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
-              <Hero />
-            </EcctrlAnimation>
-          </Ecctrl>
+          <KeyboardControls map={keyboardMap}>
+            <Ecctrl animated>
+              <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
+                <Hero />
+              </EcctrlAnimation>
+            </Ecctrl>
+          </KeyboardControls>
 
           <Map />
           <Ghost position={[24, 0, 1]} rotation={[0, (3 / Math.PI) * 5, 0]} />

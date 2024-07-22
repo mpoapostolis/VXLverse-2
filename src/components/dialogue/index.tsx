@@ -10,12 +10,12 @@ export function Dialogue() {
   return (
     <div
       onClick={() => store.setDialog(undefined)}
-      className={cn("h-screen w-screen fixed grid place-items-center top-0 left-0 bg-black z-50 bg-opacity-60", {
+      className={cn("h-screen w-screen fixed grid place-items-center top-0 left-0 bg-black z-50 bg-opacity-90", {
         "pointer-events-none opacity-0": !store.dialog,
         "pointer-events-auto opacity-100": store.dialog,
       })}
     >
-      <div className="text-3xl font-bold text-white">{text}</div>
+      <div className="text-3xl font-bold text-center text-white">{text}</div>
     </div>
   )
 }

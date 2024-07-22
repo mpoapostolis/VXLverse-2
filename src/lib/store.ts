@@ -13,6 +13,7 @@ export type Store = {
 }
 
 export const useStore = create<Store>((set) => ({
+  dialog: "Sleep, the cousin of death, visits us each night.",
   inventory: [],
   setInventory: (inventory) => set({ inventory }),
   setDialog: (dialog) => set({ dialog }),
