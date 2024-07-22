@@ -64,7 +64,6 @@ export default function App() {
         <Lights />
         <Physics timeStep="vary">
           <KeyboardControls map={keyboardMap}>
-            {/* @ts-expect-error: ok  */}
             <Ecctrl animated>
               <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
                 <Hero />
