@@ -7,6 +7,8 @@ import { Ghost } from "./components/ghost"
 import { Hero } from "./components/hero"
 import Lights from "./components/lights"
 import { Map } from "./components/map"
+import { useStore } from "./lib/store"
+import { cn } from "./lib/utils"
 
 export default function App() {
   /**
@@ -48,6 +50,7 @@ export default function App() {
   }
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  const store = useStore()
   return (
     <div className="w-screen h-screen">
       <Dialogue />
@@ -59,7 +62,12 @@ export default function App() {
           <img className="w-44" src="/keyControls.png" alt="control keys" />
         </div>
       )}
-      <Canvas shadows className="w-full h-full">
+      <Canvas
+        shadows
+        className={cn("w-full  h-full", {
+          blur: store.dialog,
+        })}
+      >
         <Environment background preset="night" />
         <Lights />
         <Physics timeStep="vary">
