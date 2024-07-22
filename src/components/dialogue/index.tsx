@@ -10,12 +10,19 @@ export function Dialogue() {
   return (
     <div
       onClick={() => store.setDialog(undefined)}
-      className={cn("h-screen w-screen fixed grid place-items-center top-0 left-0 bg-black z-50 bg-opacity-90", {
+      className={cn("h-screen w-screen fixed flex items-end  top-0 left-0  z-50", {
         "pointer-events-none opacity-0": !store.dialog,
         "pointer-events-auto opacity-100": store.dialog,
       })}
     >
-      <div className="text-3xl font-bold text-center text-white">{text}</div>
+      <div className="w-full p-4 md:m-8 text-gray-300 rounded-lg bg-black flex ">
+        <div className="avatar mr-8">
+          <div className="w-24 rounded">
+            <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+          </div>
+        </div>
+        <div className="text-xl w-full ">{text}</div>
+      </div>
     </div>
   )
 }

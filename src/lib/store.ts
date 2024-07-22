@@ -10,11 +10,14 @@ export type Store = {
   setInventory: (inventory: Inventory) => void
   dialog?: string
   setDialog: (dialog?: string) => void
+  sceneText?: string
+  setSceneText: (sceneText: string) => void
 }
 
 export const useStore = create<Store>((set) => ({
-  dialog: "Sleep, the cousin of death, visits us each night.",
+  sceneText: "Sleep, the cousin of death, visits us each night.",
   inventory: [],
+  setSceneText: (sceneText) => set({ sceneText }),
   setInventory: (inventory) => set({ inventory }),
   setDialog: (dialog) => set({ dialog }),
 }))

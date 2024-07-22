@@ -7,6 +7,7 @@ import { Ghost } from "./components/ghost"
 import { Hero } from "./components/hero"
 import Lights from "./components/lights"
 import { Map } from "./components/map"
+import { SceneText } from "./components/sceneText"
 import { useStore } from "./lib/store"
 import { cn } from "./lib/utils"
 
@@ -53,6 +54,7 @@ export default function App() {
   const store = useStore()
   return (
     <div className="w-screen h-screen">
+      <SceneText />
       <Dialogue />
       {isMobile ? (
         <EcctrlJoystick buttonNumber={0} />
