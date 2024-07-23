@@ -7,6 +7,7 @@ import Lights from "./components/lights"
 
 import { Dialogue } from "./components/dialogue"
 import { Scene } from "./components/scene"
+import { SceneText } from "./components/sceneText"
 import { useStore } from "./lib/store"
 import { cn } from "./lib/utils"
 
@@ -54,9 +55,9 @@ export default function App() {
     walk: "HumanArmature|Man_Walk",
     run: "HumanArmature|Man_Run",
     jump: "HumanArmature|Man_Jump",
-    jumpIdle: "HumanArmature|Man_Idle", // Assuming jump idle is the same as idle
+    jumpIdle: "HumanArmature|Man_Jump", // Assuming jump idle is the same as idle
     jumpLand: "HumanArmature|Man_Idle", // Assuming jump land is the same as idle
-    fall: "HumanArmature|Man_Death", // Assuming fall is the same as death
+    // fall: "HumanArmature|Man_Death", // Assuming fall is the same as death
     action1: "HumanArmature|Man_Clapping",
     action2: "HumanArmature|Man_Death",
     action3: "HumanArmature|Man_Idle", // Assuming hit react is the same as idle
@@ -68,7 +69,7 @@ export default function App() {
 
   return (
     <div className="w-screen h-screen">
-      {/* <SceneText /> */}
+      <SceneText />
       <Dialogue />
       <div className="fixed z-40 top-4 right-4">
         <button
@@ -93,7 +94,7 @@ export default function App() {
           Change location
         </button>
       </div>
-      {isMobile && !store.dialog && !store.sceneText ? (
+      {isMobile && (!store.dialog || store.sceneText) ? (
         <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} buttonNumber={2} />
       ) : (
         <div className="fixed hidden md:block z-40 bottom-4  select-none pointer-events-none left-4">

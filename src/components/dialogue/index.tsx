@@ -18,9 +18,9 @@ export function Dialogue() {
   return (
     <div
       onClick={handleDialogueClick}
-      className={cn("h-screen w-screen fixed flex md:items-end items-center p-4 top-0 left-0 z-50", showDialogue)}
+      className={cn("h-screen w-screen fixed flex items-end  top-0 left-0 z-50", showDialogue)}
     >
-      <div className="w-full p-4 md:m-8 text-gray-300 rounded-lg bg-black min-h-20">
+      <div className="w-full p-4  text-gray-300 rounded-lg bg-black min-h-20">
         <div className="flex w-full">
           <div className="avatar mr-2 mb-4">
             <div className="md:w-32 w-20 h-fit rounded">
