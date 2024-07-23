@@ -426,7 +426,7 @@ export function House(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF("/house.glb") as GLTFResult
   return (
     <RigidBody type="fixed" colliders="trimesh">
-      <group {...props} scale={[4, 4, 4]} position={[5, 0, 5]} dispose={null}>
+      <group {...props} scale={[3.2, 3.2, 3.2]} position={[3.2, 0, 3.2]} dispose={null}>
         <mesh castShadow receiveShadow geometry={nodes.group1624869655.geometry} material={materials.mat21} />
         <mesh castShadow receiveShadow geometry={nodes.group1300204801.geometry} material={materials.mat19} />
         <mesh castShadow receiveShadow geometry={nodes.group1319867724.geometry} material={materials.mat19} />

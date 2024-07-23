@@ -28,7 +28,7 @@ export type Store = {
 export const useStore = create<Store>((set) => ({
   sceneText: "Sleep, the cousin of death, visits us each night.",
   setScene: (scene) => set({ scene }),
-  scene: "farm",
+  scene: "park",
   inventory: [],
   setSceneText: (sceneText) => set({ sceneText }),
   setInventory: (inventory) => set({ inventory }),

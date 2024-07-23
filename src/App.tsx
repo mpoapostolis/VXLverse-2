@@ -3,12 +3,10 @@ import { Canvas } from "@react-three/fiber"
 import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
 import { Hero } from "./components/characters/hero"
-import { Ghost } from "./components/ghost"
 import Lights from "./components/lights"
 
 import { Dialogue } from "./components/dialogue"
 import { Scene } from "./components/scene"
-import { SceneText } from "./components/sceneText"
 import { useStore } from "./lib/store"
 import { cn } from "./lib/utils"
 
@@ -47,7 +45,7 @@ export default function App() {
     | "HumanArmature|Man_SwordSlash"
     | "HumanArmature|Man_Walk"
 
-  const scenes = ["house", "farm"]
+  const scenes = ["house", "farm", "town", "park"]
   /**
    * Character animation set preset
    */
@@ -70,7 +68,7 @@ export default function App() {
 
   return (
     <div className="w-screen h-screen">
-      <SceneText />
+      {/* <SceneText /> */}
       <Dialogue />
       <div className="fixed z-40 top-4 right-4">
         <button
@@ -78,14 +76,16 @@ export default function App() {
             store.setDialog({
               content: "Change location",
               divider: "Where do you want to go?",
-              choices: scenes.map((s) => ({
-                label: s,
-                onSelect: () => {
-                  store.setScene(s)
-                  store.setSceneText(s)
-                  store.setDialog(null)
-                },
-              })),
+              choices: scenes
+                .filter((c) => c !== store.scene)
+                .map((s) => ({
+                  label: s,
+                  onSelect: () => {
+                    store.setScene(s)
+                    store.setSceneText(s)
+                    store.setDialog(null)
+                  },
+                })),
             })
           }}
           className="bg-base-200 text-white px-4 py-2 rounded"
@@ -101,6 +101,7 @@ export default function App() {
         </div>
       )}
       <Canvas
+        key={store.scene}
         shadows
         className={cn("w-full  h-full", {
           blur: store.dialog?.content,
@@ -108,7 +109,7 @@ export default function App() {
       >
         <Environment background preset="night" />
         <Lights />
-        <Physics key={store.scene} timeStep="vary">
+        <Physics timeStep="vary">
           <KeyboardControls map={keyboardMap}>
             <Ecctrl animated>
               <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
@@ -118,7 +119,7 @@ export default function App() {
           </KeyboardControls>
 
           <Scene />
-          <Ghost position={[2, -2, 2]} rotation={[0, (3 / Math.PI) * 5, 0]} />
+          {/* <Ghost position={[2, -2, 2]} rotation={[0, (3 / Math.PI) * 5, 0]} /> */}
         </Physics>
       </Canvas>
     </div>
