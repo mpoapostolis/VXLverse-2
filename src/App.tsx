@@ -2,11 +2,12 @@ import { Environment, KeyboardControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
+import { Hero } from "./components/characters/hero"
 import { Dialogue } from "./components/dialogue"
 import { Ghost } from "./components/ghost"
-import { Hero } from "./components/hero"
 import Lights from "./components/lights"
-import { Map } from "./components/map"
+
+import { House } from "./components/scenes/house"
 import { SceneText } from "./components/sceneText"
 import { useStore } from "./lib/store"
 import { cn } from "./lib/utils"
@@ -31,35 +32,49 @@ export default function App() {
   /**
    * Character url preset
    */
-  const characterURL = "./Demon.glb"
+  const characterURL = "./hero.glb"
+
+  type ActionName =
+    | "HumanArmature|Man_Clapping"
+    | "HumanArmature|Man_Death"
+    | "HumanArmature|Man_Idle"
+    | "HumanArmature|Man_Jump"
+    | "HumanArmature|Man_Punch"
+    | "HumanArmature|Man_Run"
+    | "HumanArmature|Man_RunningJump"
+    | "HumanArmature|Man_Sitting"
+    | "HumanArmature|Man_Standing"
+    | "HumanArmature|Man_SwordSlash"
+    | "HumanArmature|Man_Walk"
 
   /**
    * Character animation set preset
    */
   const animationSet = {
-    idle: "CharacterArmature|Idle",
-    walk: "CharacterArmature|Walk",
-    run: "CharacterArmature|Run",
-    jump: "CharacterArmature|Jump",
-    jumpIdle: "CharacterArmature|Jump_Idle",
-    jumpLand: "CharacterArmature|Jump_Land",
-    fall: "CharacterArmature|Duck", // This is for falling from high sky
-    action1: "CharacterArmature|Wave",
-    action2: "CharacterArmature|Death",
-    action3: "CharacterArmature|HitReact",
-    action4: "CharacterArmature|Punch",
+    idle: "HumanArmature|Man_Idle",
+    walk: "HumanArmature|Man_Walk",
+    run: "HumanArmature|Man_Run",
+    jump: "HumanArmature|Man_Jump",
+    jumpIdle: "HumanArmature|Man_Idle", // Assuming jump idle is the same as idle
+    jumpLand: "HumanArmature|Man_Idle", // Assuming jump land is the same as idle
+    fall: "HumanArmature|Man_Death", // Assuming fall is the same as death
+    action1: "HumanArmature|Man_Clapping",
+    action2: "HumanArmature|Man_Death",
+    action3: "HumanArmature|Man_Idle", // Assuming hit react is the same as idle
+    action4: "HumanArmature|Man_Punch",
   }
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
   const store = useStore()
+
   return (
     <div className="w-screen h-screen">
       <SceneText />
       <Dialogue />
-      {isMobile ? (
-        <EcctrlJoystick buttonNumber={0} />
+      {isMobile && !store.dialog && !store.sceneText ? (
+        <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} buttonNumber={2} />
       ) : (
-        <div className="fixed z-40 bottom-4  select-none pointer-events-none left-4">
+        <div className="fixed hidden md:blockw z-40 bottom-4  select-none pointer-events-none left-4">
           <img className="w-44" src="/keyControls.png" alt="control keys" />
         </div>
       )}
@@ -80,8 +95,8 @@ export default function App() {
             </Ecctrl>
           </KeyboardControls>
 
-          <Map />
-          <Ghost position={[24, 0, 1]} rotation={[0, (3 / Math.PI) * 5, 0]} />
+          <House />
+          <Ghost position={[2, -2, 2]} rotation={[0, (3 / Math.PI) * 5, 0]} />
         </Physics>
       </Canvas>
     </div>

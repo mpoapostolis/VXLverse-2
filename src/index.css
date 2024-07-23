@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+canvas {
+  width: 100vw;
+  height: 100vh;
+}
+
 @keyframes slowFadeOut {
   0% {
     scale: 1;

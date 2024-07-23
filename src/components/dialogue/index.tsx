@@ -10,7 +10,7 @@ export function Dialogue() {
   return (
     <div
       onClick={() => store.setDialog(undefined)}
-      className={cn("h-screen w-screen fixed flex items-end  top-0 left-0  z-50", {
+      className={cn("h-screen w-screen fixed flex md:items-end items-center p-4 top-0 left-0  z-50", {
         "pointer-events-none opacity-0": !store.dialog,
         "pointer-events-auto opacity-100": store.dialog,
       })}
