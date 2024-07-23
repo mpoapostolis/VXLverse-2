@@ -3,11 +3,11 @@ import { Canvas } from "@react-three/fiber"
 import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
 import { Hero } from "./components/characters/hero"
-import { Dialogue } from "./components/dialogue"
 import { Ghost } from "./components/ghost"
 import Lights from "./components/lights"
 
-import { House } from "./components/scenes/house"
+import { Dialogue } from "./components/dialogue"
+import { Scene } from "./components/scene"
 import { SceneText } from "./components/sceneText"
 import { useStore } from "./lib/store"
 import { cn } from "./lib/utils"
@@ -47,6 +47,7 @@ export default function App() {
     | "HumanArmature|Man_SwordSlash"
     | "HumanArmature|Man_Walk"
 
+  const scenes = ["house", "farm"]
   /**
    * Character animation set preset
    */
@@ -71,6 +72,27 @@ export default function App() {
     <div className="w-screen h-screen">
       <SceneText />
       <Dialogue />
+      <div className="fixed z-40 top-4 right-4">
+        <button
+          onClick={() => {
+            store.setDialog({
+              content: "Change location",
+              divider: "Where do you want to go?",
+              choices: scenes.map((s) => ({
+                label: s,
+                onSelect: () => {
+                  store.setScene(s)
+                  store.setSceneText(s)
+                  store.setDialog(null)
+                },
+              })),
+            })
+          }}
+          className="bg-base-200 text-white px-4 py-2 rounded"
+        >
+          Change location
+        </button>
+      </div>
       {isMobile && !store.dialog && !store.sceneText ? (
         <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} buttonNumber={2} />
       ) : (
@@ -81,12 +103,12 @@ export default function App() {
       <Canvas
         shadows
         className={cn("w-full  h-full", {
-          blur: store.dialog,
+          blur: store.dialog?.content,
         })}
       >
         <Environment background preset="night" />
         <Lights />
-        <Physics timeStep="vary">
+        <Physics key={store.scene} timeStep="vary">
           <KeyboardControls map={keyboardMap}>
             <Ecctrl animated>
               <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
@@ -95,7 +117,7 @@ export default function App() {
             </Ecctrl>
           </KeyboardControls>
 
-          <House />
+          <Scene />
           <Ghost position={[2, -2, 2]} rotation={[0, (3 / Math.PI) * 5, 0]} />
         </Physics>
       </Canvas>

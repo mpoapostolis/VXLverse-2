@@ -56,7 +56,9 @@ export function Ghost(props: JSX.IntrinsicElements["group"]) {
           type="fixed"
           colliders="cuboid"
           onCollisionEnter={() => {
-            store.setDialog("Don't forget to pick up your repaired watch from Emma at the convenience store.")
+            store.setDialog({
+              content: "Don't forget to pick up your repaired watch from Emma at the convenience store.",
+            })
           }}
         >
           <Capsule position={[0, 1, 0]} args={[1.2, 2, 1]}>

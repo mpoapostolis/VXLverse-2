@@ -55,7 +55,7 @@ export function Farm(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF("/farm.glb") as GLTFResult
   return (
     <RigidBody type="fixed" colliders="trimesh">
-      <group {...props} dispose={null} position={[4, 0, 8]}>
+      <group {...props} dispose={null} scale={[0.8, 0.8, 0.8]} position={[4, -1.6, 8]}>
         <group rotation={[-Math.PI / 2, 0, 0]}>
           <mesh
             castShadow

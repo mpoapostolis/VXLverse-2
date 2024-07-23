@@ -4,8 +4,8 @@ import { useWindupString } from "windups"
 
 export function Dialogue() {
   const store = useStore()
-  const [text] = useWindupString(store?.dialog ?? "", {
-    pace: (char: string) => (char === " " ? 100 : 50),
+  const [text] = useWindupString(store?.dialog?.content ?? "", {
+    pace: (char: string) => (char === " " ? 50 : 30),
   })
   return (
     <div
@@ -17,11 +17,32 @@ export function Dialogue() {
     >
       <div className="w-full p-4 md:m-8 text-gray-300 rounded-lg bg-black flex ">
         <div className="avatar mr-8">
-          <div className="w-24 rounded">
+          <div className="w-32 h-fit rounded">
             <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
           </div>
         </div>
-        <div className="text-xl w-full ">{text}</div>
+        <div className="grid gap-4 w-full">
+          <div className="text-xl w-full ">{text}</div>
+          <div
+            className={cn("divider", {
+              hidden: !store.dialog?.divider,
+            })}
+          >
+            {store.dialog?.divider}
+          </div>
+
+          <div
+            className={cn("grid gap-2", {
+              hidden: !store.dialog?.choices,
+            })}
+          >
+            {store.dialog?.choices?.map((choice, i) => (
+              <button key={i} onClick={choice?.onSelect} className="btn w-full btn-sm btn-outline">
+                {choice.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
