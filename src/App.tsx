@@ -101,12 +101,14 @@ export default function App() {
         </div>
       )}
       <Canvas
+        color="#171717"
         key={store.scene}
         shadows
         className={cn("w-full  h-full", {
           blur: store.dialog?.content,
         })}
       >
+        <fog attach="fog" args={["#000", 0, 30]} />
         <Environment background preset="night" />
         <Lights />
         <Physics timeStep="vary">

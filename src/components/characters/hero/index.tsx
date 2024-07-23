@@ -31,6 +31,17 @@ export function Hero(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF("/hero.glb") as GLTFResult
   return (
     <group scale={[0.3, 0.3, 0.3]} position={[0, -0.6, 0]} ref={group} {...props} dispose={null}>
+      <pointLight
+        intensity={1}
+        castShadow
+        shadow-bias={-0.0004}
+        position={[2, 5, 0]}
+        shadow-camera-top={20}
+        shadow-camera-right={20}
+        shadow-camera-bottom={-20}
+        shadow-camera-left={-20}
+      />
+
       <group name="Root_Scene">
         <group name="RootNode">
           <group name="HumanArmature" rotation={[-Math.PI / 2, 0, 0]} scale={100}>
