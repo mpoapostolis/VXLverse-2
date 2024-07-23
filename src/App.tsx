@@ -50,7 +50,7 @@ export default function App() {
   /**
    * Character animation set preset
    */
-  const animationSet = {
+  const animationSet: Record<string, ActionName> = {
     idle: "HumanArmature|Man_Idle",
     walk: "HumanArmature|Man_Walk",
     run: "HumanArmature|Man_Run",
@@ -74,7 +74,7 @@ export default function App() {
       {isMobile && !store.dialog && !store.sceneText ? (
         <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} buttonNumber={2} />
       ) : (
-        <div className="fixed hidden md:blockw z-40 bottom-4  select-none pointer-events-none left-4">
+        <div className="fixed hidden md:block z-40 bottom-4  select-none pointer-events-none left-4">
           <img className="w-44" src="/keyControls.png" alt="control keys" />
         </div>
       )}
