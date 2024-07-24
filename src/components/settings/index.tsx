@@ -22,22 +22,6 @@ export function Settings() {
               <option key={scene}>{scene}</option>
             ))}
           </select>
-
-          <label className="label text-sm">Scale ({store.sceneConfig[store.scene]?.toFixed(1)} )</label>
-
-          <input
-            type="range"
-            min={0}
-            max={100}
-            step={0.5}
-            className="range range-xs"
-            onChange={(e) =>
-              store.setSceneConfig({
-                ...store.sceneConfig,
-                [store.scene]: parseFloat(e.target.value),
-              })
-            }
-          />
         </label>
       </div>
 

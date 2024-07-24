@@ -28,11 +28,8 @@ export function Npc(
     const [_, first] = Object.keys(actions)
     actions[first].play()
   }, [actions])
-  const commonProps = props.isEdit
-    ? { scale: props.scale }
-    : {
-        ...props,
-      }
+  const commonProps = props.isEdit ? { scale: props.scale } : props
+
   return (
     <group ref={group} {...commonProps} dispose={null}>
       <primitive object={scene} dispose={null} />

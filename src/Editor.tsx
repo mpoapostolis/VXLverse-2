@@ -1,27 +1,19 @@
 import { Canvas } from "@react-three/fiber"
 
-import { Environment, MapControls, PivotControls } from "@react-three/drei"
+import { Environment, KeyboardControls, MapControls, PivotControls } from "@react-three/drei"
 import { Physics } from "@react-three/rapier"
-import { useEffect } from "react"
+import Ecctrl, { EcctrlAnimation } from "ecctrl"
 import * as THREE from "three"
+import { animationSet, characterURL, Hero, keyboardMap } from "./components/hero"
 import Lights from "./components/lights"
 import { Npc } from "./components/npc"
-import { allScenes, Scene } from "./components/scene"
+import { Scene } from "./components/scene"
 import { Settings } from "./components/settings"
 import { useStore } from "./lib/store"
 
 export default function Editor() {
   const store = useStore()
-  useEffect(() => {
-    store.setSceneConfig(
-      allScenes.reduce((acc, scene) => {
-        return {
-          ...acc,
-          [scene]: 1,
-        }
-      }, {}),
-    )
-  }, [])
+
   return (
     <div className="w-screen h-screen">
       <Settings />
@@ -29,7 +21,7 @@ export default function Editor() {
         <MapControls makeDefault />
         <Environment background preset="night" />
         <Lights />
-        <Physics timeStep="vary">
+        <Physics key={store.scene} timeStep="vary">
           <Scene />
           {store.npcs
             .filter((e) => e.scene === store.scene)
@@ -62,6 +54,13 @@ export default function Editor() {
                 </mesh>
               </PivotControls>
             ))}
+          <KeyboardControls map={keyboardMap}>
+            <Ecctrl floatHeight={0.1} animated>
+              <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
+                <Hero />
+              </EcctrlAnimation>
+            </Ecctrl>
+          </KeyboardControls>
         </Physics>
       </Canvas>
     </div>

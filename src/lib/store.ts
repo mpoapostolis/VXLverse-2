@@ -31,7 +31,6 @@ export type Store = {
   setSelectedNpc: (uuid: string) => void
   inventory: Inventory
   sceneConfig: SceneConfig
-  setSceneConfig: (sceneConfig: SceneConfig) => void
   scene: string
   npcs: NpcType[]
   addNpc: (npc: NpcType) => void
@@ -49,8 +48,12 @@ export const useStore = create<Store>((set) => ({
   setSelectedNpc: (selectedNpc) => set({ selectedNpc }),
   sceneText: "Sleep, the cousin of death, visits us each night.",
   setScene: (scene) => set({ scene }),
-  sceneConfig: {},
-  setSceneConfig: (sceneConfig) => set({ sceneConfig }),
+  sceneConfig: {
+    farm: 0.8,
+    house: 3.2,
+    park: 20,
+    town: 10,
+  },
   scene: "park",
   inventory: [],
   npcs: [],
