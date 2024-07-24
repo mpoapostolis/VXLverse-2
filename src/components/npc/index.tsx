@@ -39,7 +39,7 @@ export function Npc(
     </group>
   )
 }
-export const allNpcTypes = ["ghost"] as const
+export const allNpcTypes = ["ghost", "hoodie_guy", "farmer", "woman_1", "woman_2"] as const
 allNpcTypes.forEach((type) => {
   useGLTF.preload(`/characters/${type}.glb`)
 })

@@ -2,15 +2,26 @@ import { Canvas } from "@react-three/fiber"
 
 import { Environment, MapControls, PivotControls } from "@react-three/drei"
 import { Physics } from "@react-three/rapier"
+import { useEffect } from "react"
 import * as THREE from "three"
 import Lights from "./components/lights"
 import { Npc } from "./components/npc"
-import { Scene } from "./components/scene"
+import { allScenes, Scene } from "./components/scene"
 import { Settings } from "./components/settings"
 import { useStore } from "./lib/store"
 
 export default function Editor() {
   const store = useStore()
+  useEffect(() => {
+    store.setSceneConfig(
+      allScenes.reduce((acc, scene) => {
+        return {
+          ...acc,
+          [scene]: 1,
+        }
+      }, {}),
+    )
+  }, [])
   return (
     <div className="w-screen h-screen">
       <Settings />
@@ -24,6 +35,7 @@ export default function Editor() {
             .filter((e) => e.scene === store.scene)
             .map((npc) => (
               <PivotControls
+                enabled={store.selectedNpc === npc.uuid}
                 key={npc.uuid}
                 disableScaling
                 onDrag={(e) => {
@@ -45,7 +57,9 @@ export default function Editor() {
                   })
                 }}
               >
-                <Npc {...npc} key={npc.uuid} isEdit />
+                <mesh key={npc.uuid} onClick={() => store.setSelectedNpc(npc.uuid)}>
+                  <Npc {...npc} isEdit />
+                </mesh>
               </PivotControls>
             ))}
         </Physics>

@@ -1,6 +1,5 @@
 "use client"
 
-import { allScenes } from "@/components/scene"
 import { create } from "zustand"
 
 export type InventoryItem = string
@@ -28,6 +27,8 @@ export type NpcType = {
 export type SceneConfig = Record<string, number>
 
 export type Store = {
+  selectedNpc?: string
+  setSelectedNpc: (uuid: string) => void
   inventory: Inventory
   sceneConfig: SceneConfig
   setSceneConfig: (sceneConfig: SceneConfig) => void
@@ -45,16 +46,11 @@ export type Store = {
 }
 
 export const useStore = create<Store>((set) => ({
+  setSelectedNpc: (selectedNpc) => set({ selectedNpc }),
   sceneText: "Sleep, the cousin of death, visits us each night.",
   setScene: (scene) => set({ scene }),
-  sceneConfig: allScenes.reduce(
-    (acc, curr) => ({
-      ...acc,
-      [curr]: 1,
-    }),
-    {},
-  ),
-  setSceneConfig: (sceneConfig) => set((state) => ({ ...state.sceneConfig, sceneConfig })),
+  sceneConfig: {},
+  setSceneConfig: (sceneConfig) => set({ sceneConfig }),
   scene: "park",
   inventory: [],
   npcs: [],

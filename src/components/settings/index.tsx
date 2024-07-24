@@ -1,4 +1,5 @@
 import { useStore } from "@/lib/store"
+import { cn } from "@/lib/utils"
 import { Object3D } from "three"
 import { allNpcTypes } from "../npc"
 import { allScenes } from "../scene"
@@ -32,6 +33,7 @@ export function Settings() {
             className="range range-xs"
             onChange={(e) =>
               store.setSceneConfig({
+                ...store.sceneConfig,
                 [store.scene]: parseFloat(e.target.value),
               })
             }
@@ -42,7 +44,13 @@ export function Settings() {
       {store.npcs
         .filter((npc) => npc.scene === store.scene)
         .map((npc, idx) => (
-          <div className=" bg-base-100 grid grid-cols-2 gap-1 p-3" key={npc.name + idx}>
+          <div
+            onClick={() => store.setSelectedNpc(npc.uuid)}
+            className={cn(" bg-base-100 grid grid-cols-2 gap-1 p-3", {
+              "border border-yellow-200 bg-black": store.selectedNpc === npc.uuid,
+            })}
+            key={npc.name + idx}
+          >
             <label className="form-control w-full ">
               <div className="label text-sm">
                 <span className="label-text">Name</span>
@@ -108,6 +116,7 @@ export function Settings() {
       <button
         onClick={() => {
           const uuid = new Object3D().uuid
+          store.setSelectedNpc(uuid)
           store.addNpc({
             uuid,
             name: "New NPC",
