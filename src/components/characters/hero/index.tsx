@@ -30,7 +30,7 @@ export function Hero(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>()
   const { nodes, materials } = useGLTF("/hero.glb") as GLTFResult
   return (
-    <group scale={[0.3, 0.3, 0.3]} position={[0, -0.6, 0]} ref={group} {...props} dispose={null}>
+    <group ref={group} {...props} dispose={null}>
       <pointLight
         intensity={1}
         castShadow

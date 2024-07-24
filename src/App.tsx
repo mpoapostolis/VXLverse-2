@@ -6,7 +6,7 @@ import { Hero } from "./components/characters/hero"
 import Lights from "./components/lights"
 
 import { Dialogue } from "./components/dialogue"
-import { Scene } from "./components/scene"
+import { Scene } from "./components/scenes"
 import { SceneText } from "./components/sceneText"
 import { useStore } from "./lib/store"
 import { cn } from "./lib/utils"

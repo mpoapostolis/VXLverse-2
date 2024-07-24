@@ -4,9 +4,7 @@ import { House } from "../scenes/house"
 import { Park } from "../scenes/park"
 import { Town } from "../scenes/town"
 
-export function Scene() {
-  // code splitting
-
+export function EditorScene() {
   const store = useStore()
   switch (store.scene) {
     case "house":
