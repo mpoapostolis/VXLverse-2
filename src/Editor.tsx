@@ -1,10 +1,11 @@
 import { Canvas } from "@react-three/fiber"
 
-import { Environment, OrbitControls } from "@react-three/drei"
+import { Environment, MapControls, PivotControls } from "@react-three/drei"
 import { Physics } from "@react-three/rapier"
-import { EditCharacter } from "./components/characters/editCharacter"
+import * as THREE from "three"
 import Lights from "./components/lights"
-import { EditorScene } from "./components/scenes/editor-scene"
+import { Npc } from "./components/npc"
+import { Scene } from "./components/scene"
 import { Settings } from "./components/settings"
 import { useStore } from "./lib/store"
 
@@ -14,14 +15,39 @@ export default function Editor() {
     <div className="w-screen h-screen">
       <Settings />
       <Canvas color="#171717" shadows>
-        <OrbitControls makeDefault />
+        <MapControls makeDefault />
         <Environment background preset="night" />
         <Lights />
-        <Physics debug timeStep="vary">
-          <EditorScene />
-          {store.npcs.map((npc) => (
-            <EditCharacter {...npc} key={npc.uuid} />
-          ))}
+        <Physics timeStep="vary">
+          <Scene />
+          {store.npcs
+            .filter((e) => e.scene === store.scene)
+            .map((npc) => (
+              <PivotControls
+                key={npc.uuid}
+                disableScaling
+                onDrag={(e) => {
+                  const matrix = e // Assuming e is already a Matrix4 instance
+                  const position = new THREE.Vector3()
+                  const scale = new THREE.Vector3()
+                  const quaternion = new THREE.Quaternion()
+                  const rotation = new THREE.Euler()
+
+                  // Decompose the matrix to get position, quaternion, and scale
+                  matrix.decompose(position, quaternion, scale)
+                  rotation.setFromQuaternion(quaternion)
+
+                  // Update the store with the decomposed values
+                  store.updateNpc({
+                    ...npc,
+                    position: [position.x, position.y, position.z],
+                    rotation: [rotation.x, rotation.y, rotation.z],
+                  })
+                }}
+              >
+                <Npc {...npc} key={npc.uuid} isEdit />
+              </PivotControls>
+            ))}
         </Physics>
       </Canvas>
     </div>

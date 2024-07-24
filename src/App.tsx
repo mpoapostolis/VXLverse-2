@@ -2,11 +2,12 @@ import { Environment, KeyboardControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
-import { Hero } from "./components/characters/hero"
+import { Hero } from "./components/hero"
 import Lights from "./components/lights"
 
 import { Dialogue } from "./components/dialogue"
-import { Scene } from "./components/scenes"
+import { Npc } from "./components/npc"
+import { Scene } from "./components/scene"
 import { SceneText } from "./components/sceneText"
 import { useStore } from "./lib/store"
 import { cn } from "./lib/utils"
@@ -120,9 +121,12 @@ export default function App() {
               </EcctrlAnimation>
             </Ecctrl>
           </KeyboardControls>
-
+          {store.npcs
+            .filter((e) => e.scene === store.scene)
+            .map((npc) => (
+              <Npc key={npc.uuid} {...npc} />
+            ))}
           <Scene />
-          {/* <Ghost position={[2, -2, 2]} rotation={[0, (3 / Math.PI) * 5, 0]} /> */}
         </Physics>
       </Canvas>
     </div>

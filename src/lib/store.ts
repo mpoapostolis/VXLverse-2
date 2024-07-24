@@ -1,5 +1,6 @@
 "use client"
 
+import { allScenes } from "@/components/scene"
 import { create } from "zustand"
 
 export type InventoryItem = string
@@ -14,35 +15,46 @@ type Dialogue = {
   }[]
 }
 
-export type NpcType = "hero" | "ghost"
-export type Npc = {
+export type NpcType = {
   uuid: string
   name: string
   position: [number, number, number]
   rotation: [number, number, number]
   scale: [number, number, number]
   scene: string
-  type: NpcType
+  type: string
 }
+
+export type SceneConfig = Record<string, number>
 
 export type Store = {
   inventory: Inventory
+  sceneConfig: SceneConfig
+  setSceneConfig: (sceneConfig: SceneConfig) => void
   scene: string
-  npcs: Npc[]
-  addNpc: (npc: Npc) => void
-  removeNpc: (npc: Npc) => void
+  npcs: NpcType[]
+  addNpc: (npc: NpcType) => void
+  removeNpc: (npc: NpcType) => void
   setScene: (scene: string) => void
   setInventory: (inventory: Inventory) => void
   dialog?: Dialogue
   setDialog: (dialog?: Dialogue) => void
   sceneText?: string
   setSceneText: (sceneText: string) => void
-  updateNpc: (npc: Npc) => void
+  updateNpc: (npc: NpcType) => void
 }
 
 export const useStore = create<Store>((set) => ({
   sceneText: "Sleep, the cousin of death, visits us each night.",
   setScene: (scene) => set({ scene }),
+  sceneConfig: allScenes.reduce(
+    (acc, curr) => ({
+      ...acc,
+      [curr]: 1,
+    }),
+    {},
+  ),
+  setSceneConfig: (sceneConfig) => set((state) => ({ ...state.sceneConfig, sceneConfig })),
   scene: "park",
   inventory: [],
   npcs: [],
