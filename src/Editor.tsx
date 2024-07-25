@@ -1,4 +1,4 @@
-import { Canvas, useFrame, useThree, Vector3 } from "@react-three/fiber"
+import { Canvas, useThree, Vector3 } from "@react-three/fiber"
 
 import { Environment, Html, KeyboardControls, TransformControls } from "@react-three/drei"
 import { Physics } from "@react-three/rapier"
@@ -20,9 +20,23 @@ export default function Editor() {
   const store = useStore()
 
   const ref = useRef<THREE.Vector3>(new THREE.Vector3())
+  const [died, setDied] = useState(0)
+  console.log("died", died)
   return (
     <div className="w-screen h-screen">
       <div className="fixed flex gap-4 z-40 top-4 right-4">
+        <button
+          className="btn rounded-none bg-base-200 btn-sm text-white"
+          onClick={() => {
+            setDied((died) => died + 1)
+            store.glbs.forEach((glb) => {
+              if (glb.scene === store.scene) store.removeGlb(glb)
+            })
+          }}
+        >
+          Clear
+        </button>
+
         <div className="dropdown">
           <div
             tabIndex={0}
@@ -145,7 +159,7 @@ export default function Editor() {
         </button>
       </div>
       {isMobile && (!store.dialog || store.sceneText) ? (
-        <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} buttonNumber={2} />
+        <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} />
       ) : (
         <div className="fixed hidden md:block z-40 bottom-4  select-none pointer-events-none left-4">
           <img className="w-44" src="/keyControls.png" alt="control keys" />
@@ -153,7 +167,7 @@ export default function Editor() {
       )}
 
       <Dialogue />
-      <Canvas key={store.scene} shadows>
+      <Canvas key={store.scene + died} shadows>
         <Environment background preset="night" />
         <Lights />
         <Physics timeStep="vary">
@@ -182,11 +196,9 @@ function Content(props: { rref: React.MutableRefObject<Vector3> }) {
     store.updateGlb(obj)
   }, 1000)
   const t = useThree()
-  useFrame((t) => {})
   return (
     <>
-      <Perf position="top-left" />
-
+      {!isMobile && <Perf position="top-left" />}
       <Scene />
       {store.glbs
         .filter((e) => e.scene === store.scene)

@@ -1,10 +1,11 @@
 import { Environment, KeyboardControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
-import { Physics } from "@react-three/rapier"
+import { CuboidCollider, Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
 import { animationSet, characterURL, Hero, keyboardMap } from "./components/hero"
 import Lights from "./components/lights"
 
+import { useState } from "react"
 import { Dialogue } from "./components/dialogue"
 import { Glb } from "./components/glb"
 import { allScenes, Scene } from "./components/scene"
@@ -15,6 +16,7 @@ import { cn } from "./lib/utils"
 export const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 export default function App() {
   const store = useStore()
+  const [died, setDied] = useState(0)
   return (
     <div className="w-screen h-screen">
       <SceneText />
@@ -43,15 +45,14 @@ export default function App() {
         </button>
       </div>
       {isMobile && (!store.dialog || store.sceneText) ? (
-        <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} buttonNumber={2} />
+        <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} />
       ) : (
         <div className="fixed hidden md:block z-40 bottom-4  select-none pointer-events-none left-4">
           <img className="w-44" src="/keyControls.png" alt="control keys" />
         </div>
       )}
       <Canvas
-        color="#171717"
-        key={store.scene}
+        key={store.scene + died}
         shadows
         className={cn("w-full  h-full", {
           blur: store.dialog?.content,
@@ -61,6 +62,14 @@ export default function App() {
         <Environment background preset="night" />
         <Lights />
         <Physics key={store.scene} timeStep="vary">
+          <CuboidCollider
+            onCollisionEnter={() => {
+              store.setSceneText("You died")
+              setDied(died + 1)
+            }}
+            args={[100, 1, 100]}
+            position={[0, -15, 0]}
+          />
           <KeyboardControls map={keyboardMap}>
             <Ecctrl animated>
               <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
