@@ -46,7 +46,7 @@ export const keyboardMap = [
 /**
  * Character url preset
  */
-export const characterURL = "/characters/hero.glb"
+export const characterURL = "/glb/hero.glb"
 
 type ActionName =
   | "HumanArmature|Man_Clapping"
@@ -80,7 +80,7 @@ export const animationSet: Record<string, ActionName> = {
 
 export function Hero(props: JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>()
-  const { nodes, materials } = useGLTF("/characters/hero.glb") as GLTFResult
+  const { nodes, materials } = useGLTF("/glb/hero.glb") as GLTFResult
   return (
     <group ref={group} position={[0, -0.6, 0]} scale={[0.3, 0.3, 0.3]} dispose={null}>
       <pointLight

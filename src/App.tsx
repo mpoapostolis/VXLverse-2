@@ -6,7 +6,7 @@ import { animationSet, characterURL, Hero, keyboardMap } from "./components/hero
 import Lights from "./components/lights"
 
 import { Dialogue } from "./components/dialogue"
-import { Npc } from "./components/npc"
+import { Glb } from "./components/glb"
 import { allScenes, Scene } from "./components/scene"
 import { SceneText } from "./components/sceneText"
 import { useStore } from "./lib/store"
@@ -68,10 +68,10 @@ export default function App() {
               </EcctrlAnimation>
             </Ecctrl>
           </KeyboardControls>
-          {store.npcs
+          {store.glbs
             .filter((e) => e.scene === store.scene)
-            .map((npc) => (
-              <Npc key={npc.uuid} {...npc} />
+            .map((glb) => (
+              <Glb key={glb.uuid} {...glb} />
             ))}
           <Scene />
         </Physics>

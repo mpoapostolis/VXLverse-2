@@ -21,6 +21,7 @@
     "leva": "^0.9.35",
     "lucide-react": "^0.414.0",
     "prettier": "^3.3.3",
+    "r3f-perf": "^7.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1",

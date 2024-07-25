@@ -3,14 +3,15 @@ import { Canvas, useFrame, useThree, Vector3 } from "@react-three/fiber"
 import { Environment, Html, KeyboardControls, TransformControls } from "@react-three/drei"
 import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
+import { Perf } from "r3f-perf"
 import { useRef, useState } from "react"
 import * as THREE from "three"
 import { isMobile } from "./App"
 import { Controls } from "./components/controls"
 import { Dialogue } from "./components/dialogue"
+import { allGlbTypes, Glb } from "./components/glb"
 import { animationSet, characterURL, Hero, keyboardMap } from "./components/hero"
 import Lights from "./components/lights"
-import { allNpcTypes, Npc } from "./components/npc"
 import { allScenes, Scene } from "./components/scene"
 import { useStore } from "./lib/store"
 import { debounce } from "./lib/utils"
@@ -25,41 +26,74 @@ export default function Editor() {
         <div className="dropdown">
           <div
             tabIndex={0}
-            onClick={() => store.setSelectedNpc(null)}
+            onClick={() => store.setSelectedGlb(null)}
             className="btn rounded-none bg-base-200 btn-sm text-white"
           >
-            Add Npc
+            Add Glb
           </div>
           <ul tabIndex={0} className="menu dropdown-content bg-base-100 rounded-none z-[1] w-52 p-2 shadow">
-            {allNpcTypes.map((npc) => (
-              <li
-                key={npc}
-                onClick={() => {
-                  // get oject by uuid
-                  const [x, y, z] = ref.current.toArray()
-                  const uuid = new THREE.Object3D().uuid
-                  store.setSelectedNpc(uuid)
-                  store.addNpc({
-                    uuid,
-                    name: npc,
-                    position: [x - 0.5, y, z - 0.5],
-                    scale: [1, 1, 1],
-                    rotation: [0, 0, 0],
-                    scene: store.scene,
-                    type: npc,
-                  })
-                }}
-              >
-                <a>{npc}</a>
-              </li>
-            ))}
+            <label className="label">
+              <span className="label-text">Npc</span>
+            </label>
+            {allGlbTypes
+              .filter((e) => e !== "coin")
+              .map((glb) => (
+                <li
+                  key={glb}
+                  onClick={() => {
+                    // get oject by uuid
+                    const [x, y, z] = ref.current.toArray()
+                    const uuid = new THREE.Object3D().uuid
+                    store.setSelectedGlb(uuid)
+                    store.addGlb({
+                      uuid,
+                      name: glb,
+                      position: [x - 0.5, y, z - 0.5],
+                      scale: [1, 1, 1],
+                      rotation: [0, 0, 0],
+                      scene: store.scene,
+                      type: "npc",
+                    })
+                  }}
+                >
+                  <a>{glb}</a>
+                </li>
+              ))}
+            <div className="divider m-0" />
+            <label className="label">
+              <span className="label-text">Misc</span>
+            </label>
+            {allGlbTypes
+              .filter((e) => e === "coin")
+              .map((glb) => (
+                <li
+                  key={glb}
+                  onClick={() => {
+                    // get oject by uuid
+                    const [x, y, z] = ref.current.toArray()
+                    const uuid = new THREE.Object3D().uuid
+                    store.setSelectedGlb(uuid)
+                    store.addGlb({
+                      uuid,
+                      name: glb,
+                      position: [x - 0.5, y, z - 0.5],
+                      scale: [1, 1, 1],
+                      rotation: [0, 0, 0],
+                      scene: store.scene,
+                      type: "misc",
+                    })
+                  }}
+                >
+                  <a>{glb}</a>
+                </li>
+              ))}
           </ul>
         </div>
 
         <div className="dropdown">
           <div
             tabIndex={0}
-            onClick={() => store.setSelectedNpc(null)}
+            onClick={() => store.setSelectedGlb(null)}
             className="btn rounded-none bg-base-200 btn-sm text-white"
           >
             Change location
@@ -69,7 +103,7 @@ export default function Editor() {
               <li
                 key={scene}
                 onClick={() => {
-                  store.setSelectedNpc(null)
+                  store.setSelectedGlb(null)
                   store.setScene(scene)
                 }}
               >
@@ -82,7 +116,7 @@ export default function Editor() {
           onClick={() => {
             //export store as json
             // Convert the JSON object to a string
-            const jsonString = JSON.stringify(store.npcs, null, 2)
+            const jsonString = JSON.stringify(store.glbs, null, 2)
 
             // Create a Blob from the JSON string
             const blob = new Blob([jsonString], { type: "application/json" })
@@ -134,45 +168,47 @@ function Content(props: { rref: React.MutableRefObject<Vector3> }) {
   const store = useStore()
 
   const selectNpc = (uuid: string) => {
-    store.setSelectedNpc(uuid)
+    store.setSelectedGlb(uuid)
   }
 
   const [mode, setMode] = useState<"scale" | "translate" | "rotate">("translate")
-  const selectedNpc = store.npcs.find((e) => e.uuid === store.selectedNpc)
+  const selectedGlb = store.glbs.find((e) => e.uuid === store.selectedGlb)
   const deleteNpc = () => {
-    store.removeNpc(selectedNpc)
-    store.setSelectedNpc(null)
+    store.removeGlb(selectedGlb)
+    store.setSelectedGlb(null)
   }
 
   const updateFn = debounce((obj: any) => {
-    store.updateNpc(obj)
+    store.updateGlb(obj)
   }, 1000)
   const t = useThree()
   useFrame((t) => {})
   return (
     <>
+      <Perf position="top-left" />
+
       <Scene />
-      {store.npcs
+      {store.glbs
         .filter((e) => e.scene === store.scene)
-        .map((npc) => (
+        .map((glb) => (
           <TransformControls
             enabled
             mode={mode}
-            position={npc.position}
-            rotation={npc.rotation}
-            scale={npc.scale}
-            key={npc.uuid}
+            position={glb.position}
+            rotation={glb.rotation}
+            scale={glb.scale}
+            key={glb.uuid}
             onClick={() => {
-              selectNpc(npc.uuid)
+              selectNpc(glb.uuid)
             }}
-            showX={store.selectedNpc === npc.uuid}
-            showY={store.selectedNpc === npc.uuid}
-            showZ={store.selectedNpc === npc.uuid}
+            showX={store.selectedGlb === glb.uuid}
+            showY={store.selectedGlb === glb.uuid}
+            showZ={store.selectedGlb === glb.uuid}
             onObjectChange={(e) => {
               // @ts-ignore
               const { position, scale, rotation } = e.target.object
               updateFn({
-                ...npc,
+                ...glb,
                 position: [position.x, position.y, position.z],
                 scale: [scale.x, scale.y, scale.z],
                 rotation: [rotation.x, rotation.y, rotation.z],
@@ -180,12 +216,12 @@ function Content(props: { rref: React.MutableRefObject<Vector3> }) {
             }}
           >
             <mesh>
-              {store.selectedNpc === npc.uuid && (
+              {store.selectedGlb === glb.uuid && (
                 <Html position={[0, 0, 0]} center>
                   <Controls onDelete={deleteNpc} onChangeMode={(mode) => setMode(mode)} />
                 </Html>
               )}
-              <Npc {...npc} isEdit />
+              <Glb {...glb} isEdit />
             </mesh>
           </TransformControls>
         ))}
