@@ -50,7 +50,7 @@ export const useStore = create<Store>((set) => ({
   setScene: (scene) => set({ scene }),
   sceneConfig: {
     farm: 0.8,
-    house: 3.2,
+    house: 2.5,
     park: 20,
     town: 10,
   },

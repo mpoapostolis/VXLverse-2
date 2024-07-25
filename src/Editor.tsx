@@ -1,4 +1,4 @@
-import { Canvas } from "@react-three/fiber"
+import { Canvas, useThree } from "@react-three/fiber"
 
 import { Environment, Html, KeyboardControls, TransformControls } from "@react-three/drei"
 import { Physics } from "@react-three/rapier"
@@ -15,6 +15,7 @@ import { useStore } from "./lib/store"
 import { debounce } from "./lib/utils"
 
 export default function Editor() {
+  const [heroPos, setHeroPos] = useState([0, 0, 0])
   const store = useStore()
   return (
     <div className="w-screen h-screen">
@@ -32,12 +33,14 @@ export default function Editor() {
               <li
                 key={npc}
                 onClick={() => {
+                  // get oject by uuid
+
                   const uuid = new THREE.Object3D().uuid
                   store.setSelectedNpc(uuid)
                   store.addNpc({
                     uuid,
-                    name: "New NPC",
-                    position: [0, 0, 0],
+                    name: npc,
+                    position: heroPos as [number, number, number],
                     scale: [1, 1, 1],
                     rotation: [0, 0, 0],
                     scene: store.scene,
@@ -73,6 +76,37 @@ export default function Editor() {
             ))}
           </ul>
         </div>
+        <button
+          onClick={() => {
+            //export store as json
+            // Convert the JSON object to a string
+            const jsonString = JSON.stringify(store.npcs, null, 2)
+
+            // Create a Blob from the JSON string
+            const blob = new Blob([jsonString], { type: "application/json" })
+
+            // Create a link element
+            const link = document.createElement("a")
+
+            // Set the download attribute with a filename
+            link.download = `game-settings.json`
+
+            // Create a URL for the Blob and set it as the href attribute
+            link.href = URL.createObjectURL(blob)
+
+            // Append the link to the body
+            document.body.appendChild(link)
+
+            // Programmatically click the link to trigger the download
+            link.click()
+
+            // Remove the link from the document
+            document.body.removeChild(link)
+          }}
+          className="btn rounded-none bg-base-200 btn-sm text-white"
+        >
+          Save
+        </button>
       </div>
 
       <Dialogue />
@@ -80,14 +114,14 @@ export default function Editor() {
         <Environment background preset="night" />
         <Lights />
         <Physics timeStep="vary">
-          <Content />
+          <Content setHeroPos={setHeroPos} />
         </Physics>
       </Canvas>
     </div>
   )
 }
 
-function Content() {
+function Content(props: { setHeroPos: (pos: [number, number, number]) => void }) {
   const store = useStore()
 
   const selectNpc = (uuid: string) => {
@@ -104,6 +138,10 @@ function Content() {
   const updateFn = debounce((obj: any) => {
     store.updateNpc(obj)
   }, 1000)
+  const setHeroPos = debounce((pos: [number, number, number]) => {
+    props.setHeroPos(pos)
+  }, 1000)
+  const t = useThree()
   return (
     <>
       <Scene />
@@ -146,7 +184,18 @@ function Content() {
         ))}
 
       <KeyboardControls map={keyboardMap}>
-        <Ecctrl maxVelLimit={5} floatHeight={0.1} animated>
+        <Ecctrl
+          name="hero1"
+          onContactForce={(payload) => {
+            const position = t.scene?.getObjectByProperty("name", "hero1").position
+            if (position) {
+              setHeroPos([position.x - 1, position.y, position.z - 1])
+            }
+          }}
+          maxVelLimit={5}
+          floatHeight={0.1}
+          animated
+        >
           <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
             <Hero />
           </EcctrlAnimation>
