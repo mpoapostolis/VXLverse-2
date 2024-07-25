@@ -12,8 +12,8 @@ import { SceneText } from "./components/sceneText"
 import { useStore } from "./lib/store"
 import { cn } from "./lib/utils"
 
+export const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 export default function App() {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
   const store = useStore()
   return (
     <div className="w-screen h-screen">

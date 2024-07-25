@@ -1,10 +1,11 @@
-import { Canvas, useThree } from "@react-three/fiber"
+import { Canvas, useFrame, useThree, Vector3 } from "@react-three/fiber"
 
 import { Environment, Html, KeyboardControls, TransformControls } from "@react-three/drei"
 import { Physics } from "@react-three/rapier"
-import Ecctrl, { EcctrlAnimation } from "ecctrl"
-import { useState } from "react"
+import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
+import { useRef, useState } from "react"
 import * as THREE from "three"
+import { isMobile } from "./App"
 import { Controls } from "./components/controls"
 import { Dialogue } from "./components/dialogue"
 import { animationSet, characterURL, Hero, keyboardMap } from "./components/hero"
@@ -15,8 +16,9 @@ import { useStore } from "./lib/store"
 import { debounce } from "./lib/utils"
 
 export default function Editor() {
-  const [heroPos, setHeroPos] = useState([0, 0, 0])
   const store = useStore()
+
+  const ref = useRef<THREE.Vector3>(new THREE.Vector3())
   return (
     <div className="w-screen h-screen">
       <div className="fixed flex gap-4 z-40 top-4 right-4">
@@ -34,13 +36,13 @@ export default function Editor() {
                 key={npc}
                 onClick={() => {
                   // get oject by uuid
-
+                  const [x, y, z] = ref.current.toArray()
                   const uuid = new THREE.Object3D().uuid
                   store.setSelectedNpc(uuid)
                   store.addNpc({
                     uuid,
                     name: npc,
-                    position: heroPos as [number, number, number],
+                    position: [x - 0.5, y, z - 0.5],
                     scale: [1, 1, 1],
                     rotation: [0, 0, 0],
                     scene: store.scene,
@@ -108,20 +110,27 @@ export default function Editor() {
           Save
         </button>
       </div>
+      {isMobile && (!store.dialog || store.sceneText) ? (
+        <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} buttonNumber={2} />
+      ) : (
+        <div className="fixed hidden md:block z-40 bottom-4  select-none pointer-events-none left-4">
+          <img className="w-44" src="/keyControls.png" alt="control keys" />
+        </div>
+      )}
 
       <Dialogue />
       <Canvas key={store.scene} shadows>
         <Environment background preset="night" />
         <Lights />
         <Physics timeStep="vary">
-          <Content setHeroPos={setHeroPos} />
+          <Content rref={ref} />
         </Physics>
       </Canvas>
     </div>
   )
 }
 
-function Content(props: { setHeroPos: (pos: [number, number, number]) => void }) {
+function Content(props: { rref: React.MutableRefObject<Vector3> }) {
   const store = useStore()
 
   const selectNpc = (uuid: string) => {
@@ -138,10 +147,8 @@ function Content(props: { setHeroPos: (pos: [number, number, number]) => void })
   const updateFn = debounce((obj: any) => {
     store.updateNpc(obj)
   }, 1000)
-  const setHeroPos = debounce((pos: [number, number, number]) => {
-    props.setHeroPos(pos)
-  }, 1000)
   const t = useThree()
+  useFrame((t) => {})
   return (
     <>
       <Scene />
@@ -187,10 +194,7 @@ function Content(props: { setHeroPos: (pos: [number, number, number]) => void })
         <Ecctrl
           name="hero1"
           onContactForce={(payload) => {
-            const position = t.scene?.getObjectByProperty("name", "hero1").position
-            if (position) {
-              setHeroPos([position.x - 1, position.y, position.z - 1])
-            }
+            props.rref.current = t.scene.getObjectByName("hero1").position
           }}
           maxVelLimit={5}
           floatHeight={0.1}
