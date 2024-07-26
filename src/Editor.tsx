@@ -21,7 +21,6 @@ export default function Editor() {
 
   const ref = useRef<THREE.Vector3>(new THREE.Vector3())
   const [died, setDied] = useState(0)
-  console.log("died", died)
   return (
     <div className="w-screen h-screen">
       <div className="fixed flex gap-4 z-40 top-4 right-4">
@@ -244,7 +243,6 @@ function Content(props: { rref: React.MutableRefObject<Vector3> }) {
           onContactForce={(payload) => {
             props.rref.current = t.scene.getObjectByName("hero1").position
           }}
-          maxVelLimit={5}
           floatHeight={0.1}
           animated
         >

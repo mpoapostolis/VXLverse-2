@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import { createJSONStorage, persist } from "zustand/middleware"
+import { persist } from "zustand/middleware"
 
 export type InventoryItem = string
 export type Inventory = InventoryItem[]
@@ -55,8 +55,9 @@ export const useStore = create(
         house: 2.5,
         park: 20,
         town: 10,
+        gallery: 1.8,
       },
-      scene: "park",
+      scene: "gallery",
       inventory: [],
       glbs: [],
       addGlb: (glb) => set((state) => ({ glbs: [...state.glbs, glb] })),
@@ -73,8 +74,14 @@ export const useStore = create(
       setDialog: (dialog) => set({ dialog }),
     }),
     {
+      version: 1,
       name: "yesterday-echoes", // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+      partialize: (state) => ({
+        ...state,
+        inventory: state.inventory,
+        scene: state.scene,
+        glbs: state.glbs,
+      }),
     },
   ),
 )
