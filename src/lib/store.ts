@@ -1,5 +1,6 @@
 "use client"
 
+import { TransformMode } from "@/Editor"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
@@ -29,6 +30,8 @@ export type SceneConfig = Record<string, number>
 
 export type Store = {
   money: number
+  transformMode: TransformMode
+  setTransformMode: (mode: TransformMode) => void
   addMoney: (amount: number) => void
   removeMoney: (amount: number) => void
   selectedGlb?: string
@@ -54,6 +57,8 @@ export const useStore = create(
   persist<Store>(
     (set) => ({
       money: 0,
+      transformMode: "translate",
+      setTransformMode: (transformMode) => set({ transformMode }),
       addMoney: (amount) => set((state) => ({ money: state.money + amount })),
       removeMoney: (amount) => set((state) => ({ money: state.money - amount })),
       setSelectedGlb: (selectedGlb) => set({ selectedGlb }),

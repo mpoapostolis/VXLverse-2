@@ -2,18 +2,17 @@ import { Environment, Html, KeyboardControls, TransformControls } from "@react-t
 import { Canvas, useThree, Vector3 } from "@react-three/fiber"
 import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
-import { Perf } from "r3f-perf"
 import { useRef, useState } from "react"
 import * as THREE from "three"
 import { isMobile } from "./App"
-import { Controls } from "./components/controls"
 import { Dialogue } from "./components/dialogue"
 import { AllGLBType, allGlbTypes, Glb } from "./components/glb"
 import { animationSet, characterURL, Hero, keyboardMap } from "./components/hero"
 import Lights from "./components/lights"
 import { allScenes, Scene } from "./components/scene"
+import { Settings } from "./components/settings"
 import { useStore } from "./lib/store"
-import { debounce } from "./lib/utils"
+import { cn, debounce } from "./lib/utils"
 
 export default function Editor() {
   const store = useStore()
@@ -23,7 +22,7 @@ export default function Editor() {
   const clearGlbs = () => {
     setDied((prev) => prev + 1)
     store.glbs.forEach((glb) => {
-      if (glb.scene === store.scene) store.removeGlb(glb)
+      if (glb?.scene === store.scene) store.removeGlb(glb)
     })
   }
 
@@ -34,12 +33,12 @@ export default function Editor() {
 
     store.addGlb({
       uuid,
-      name: glb.name,
+      name: glb?.name,
       position: [x - 0.5, y, z - 0.5],
       scale: [1, 1, 1],
       rotation: [0, 0, 0],
       scene: store.scene,
-      type: glb.type,
+      type: glb?.type,
     })
   }
 
@@ -48,21 +47,29 @@ export default function Editor() {
     store.setScene(scene)
   }
 
-  const saveSettings = () => {
-    const jsonString = JSON.stringify(store.glbs, null, 2)
-    const blob = new Blob([jsonString], { type: "application/json" })
-    const link = document.createElement("a")
-    link.download = `game-settings.json`
-    link.href = URL.createObjectURL(blob)
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
+  // const saveSettings = () => {
+  //   const jsonString = JSON.stringify(store.glbs, null, 2)
+  //   const blob = new Blob([jsonString], { type: "application/json" })
+  //   const link = document.createElement("a")
+  //   link.download = `game-settings.json`
+  //   link.href = URL.createObjectURL(blob)
+  //   document.body.appendChild(link)
+  //   link.click()
+  //   document.body.removeChild(link)
+  // }
 
   return (
     <div className="w-screen h-screen">
-      <div className="fixed flex gap-4 z-40 top-4 right-4">
-        <button className="btn rounded-none bg-base-200 btn-sm text-white" onClick={clearGlbs}>
+      <Settings />
+      <div
+        className={cn(
+          "fixed gap-4 z-40 md:top-4  top-0 justify-between bg-base-200 w-full px-4  ml-auto md:right-4 flex md:justify-end md:w-fit",
+          {
+            "top-11": store.selectedGlb,
+          },
+        )}
+      >
+        <button className="btn  rounded-none bg-base-200 btn-sm text-white" onClick={clearGlbs}>
           Clear
         </button>
         <div className="dropdown">
@@ -80,8 +87,8 @@ export default function Editor() {
             {allGlbTypes
               .filter((e) => e.type === "npc")
               .map((glb) => (
-                <li key={glb.name} onClick={() => addGlb(glb)}>
-                  <a>{glb.name}</a>
+                <li key={glb?.name} onClick={() => addGlb(glb)}>
+                  <a>{glb?.name}</a>
                 </li>
               ))}
             <div className="divider m-0" />
@@ -91,8 +98,8 @@ export default function Editor() {
             {allGlbTypes
               .filter((e) => e.type === "misc")
               .map((glb) => (
-                <li key={glb.name} onClick={() => addGlb(glb)}>
-                  <a>{glb.name}</a>
+                <li key={glb?.name} onClick={() => addGlb(glb)}>
+                  <a>{glb?.name}</a>
                 </li>
               ))}
           </ul>
@@ -113,9 +120,6 @@ export default function Editor() {
             ))}
           </ul>
         </div>
-        <button onClick={saveSettings} className="btn rounded-none bg-base-200 btn-sm text-white">
-          Save
-        </button>
       </div>
       {isMobile && (!store.dialog || store.sceneText) ? (
         <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} />
@@ -136,17 +140,9 @@ export default function Editor() {
   )
 }
 
+export type TransformMode = "scale" | "translate" | "rotate"
 function Content({ rref }: { rref: React.MutableRefObject<Vector3> }) {
   const store = useStore()
-  const [mode, setMode] = useState<"scale" | "translate" | "rotate">("translate")
-  const selectedGlb = store.glbs.find((e) => e.uuid === store.selectedGlb)
-
-  const deleteNpc = () => {
-    if (selectedGlb) {
-      store.removeGlb(selectedGlb)
-      store.setSelectedGlb(null)
-    }
-  }
 
   const updateGlb = debounce((obj: any) => {
     store.updateGlb(obj)
@@ -154,22 +150,22 @@ function Content({ rref }: { rref: React.MutableRefObject<Vector3> }) {
   const t = useThree()
   return (
     <>
-      {!isMobile && <Perf position="top-left" />}
+      {/* {!isMobile && <Perf position="top-left" />} */}
       <Scene />
       {store.glbs
         .filter((e) => e.scene === store.scene)
         .map((glb) => (
           <TransformControls
-            key={glb.uuid}
+            key={glb?.uuid}
             enabled
-            mode={mode}
-            position={glb.position}
-            rotation={glb.rotation}
-            scale={glb.scale}
-            onClick={() => store.setSelectedGlb(glb.uuid)}
-            showX={store.selectedGlb === glb.uuid}
-            showY={store.selectedGlb === glb.uuid}
-            showZ={store.selectedGlb === glb.uuid}
+            mode={store.transformMode}
+            position={glb?.position}
+            rotation={glb?.rotation}
+            scale={glb?.scale}
+            onClick={() => store.setSelectedGlb(glb?.uuid)}
+            showX={store.selectedGlb === glb?.uuid}
+            showY={store.selectedGlb === glb?.uuid}
+            showZ={store.selectedGlb === glb?.uuid}
             onObjectChange={(e) => {
               // @ts-ignore
               const { position, scale, rotation } = e.target.object
@@ -182,9 +178,9 @@ function Content({ rref }: { rref: React.MutableRefObject<Vector3> }) {
             }}
           >
             <mesh>
-              {store.selectedGlb === glb.uuid && (
-                <Html position={[0, 0, 0]} center>
-                  <Controls onDelete={deleteNpc} onChangeMode={setMode} />
+              {store.selectedGlb === glb?.uuid && (
+                <Html sprite position={[0, -0.5, 0]} center>
+                  {/* <Controls onDelete={deleteNpc} onChangeMode={setMode} /> */}
                 </Html>
               )}
               <Glb {...glb} isEdit />
