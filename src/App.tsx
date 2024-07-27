@@ -17,11 +17,17 @@ export const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 export default function App() {
   const store = useStore()
   const [died, setDied] = useState(0)
+
   return (
     <div className="w-screen h-screen">
       <SceneText />
       <Dialogue />
-      <div className="fixed z-40 top-4 right-4">
+
+      <div className="fixed z-40 w-full top-4 flex  gap-4 p-4">
+        <div className="text-4xl mr-auto relative flex items-end">
+          🪙
+          <span className="text-white text-sm">x{store.money}</span>
+        </div>
         <button
           onClick={() => {
             store.setDialog({
@@ -71,7 +77,7 @@ export default function App() {
             position={[0, -15, 0]}
           />
           <KeyboardControls map={keyboardMap}>
-            <Ecctrl animated>
+            <Ecctrl onCollisionEnter={(e) => store.addItemToInventory(e.colliderObject.name)} animated>
               <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
                 <Hero />
               </EcctrlAnimation>
@@ -79,6 +85,7 @@ export default function App() {
           </KeyboardControls>
           {store.glbs
             .filter((e) => e.scene === store.scene)
+            .filter((e) => !store.inventory.includes(e.uuid))
             .map((glb) => (
               <Glb key={glb.uuid} {...glb} />
             ))}

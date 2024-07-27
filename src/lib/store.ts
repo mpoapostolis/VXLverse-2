@@ -23,13 +23,19 @@ export type GLBType = {
   scale: [number, number, number]
   scene: string
   type: "npc" | "misc"
+  collectable?: boolean
 }
 export type SceneConfig = Record<string, number>
 
 export type Store = {
+  money: number
+  addMoney: (amount: number) => void
+  removeMoney: (amount: number) => void
   selectedGlb?: string
   setSelectedGlb: (uuid: string) => void
   inventory: Inventory
+  addItemToInventory: (item: InventoryItem) => void
+  removeItemFromInventory: (item: InventoryItem) => void
   sceneConfig: SceneConfig
   scene: string
   glbs: GLBType[]
@@ -47,8 +53,21 @@ export type Store = {
 export const useStore = create(
   persist<Store>(
     (set) => ({
+      money: 0,
+      addMoney: (amount) => set((state) => ({ money: state.money + amount })),
+      removeMoney: (amount) => set((state) => ({ money: state.money - amount })),
       setSelectedGlb: (selectedGlb) => set({ selectedGlb }),
-      sceneText: "Sleep, the cousin of death, visits us each night.",
+      addItemToInventory: (item) =>
+        set((state) => {
+          const unique = new Set([...state.inventory, item])
+          return {
+            inventory: Array.from(unique),
+          }
+        }),
+      removeItemFromInventory: (item) =>
+        set((state) => ({
+          inventory: state.inventory.filter((n) => n !== item),
+        })),
       setScene: (scene) => set({ scene }),
       sceneConfig: {
         farm: 0.8,
@@ -78,7 +97,8 @@ export const useStore = create(
       name: "yesterday-echoes", // name of the item in the storage (must be unique)
       partialize: (state) => ({
         ...state,
-        inventory: state.inventory,
+        money: 0,
+        inventory: [],
         scene: state.scene,
         glbs: state.glbs,
       }),
