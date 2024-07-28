@@ -4,7 +4,7 @@ Command: npx gltfjsx@6.2.16 -t ghost.glb
 */
 
 import { GLBType, useStore } from "@/lib/store"
-import { useAnimations, useGLTF } from "@react-three/drei"
+import { Box, useAnimations, useGLTF } from "@react-three/drei"
 import { RigidBody } from "@react-three/rapier"
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
@@ -23,12 +23,15 @@ export function Glb(
     },
 ) {
   const group = useRef<THREE.Group>()
-  const { scene, animations } = useGltfMemo(`/glb/${props.name}.glb`)
+  const name = props.type === "triggerPoint" ? "coin" : props.glbName
+  const { scene, animations } = useGltfMemo(`/glb/${name}.glb`)
   const { actions } = useAnimations(animations, group)
+
   useEffect(() => {
     const [_, first] = Object.keys(actions)
     actions[first]?.play()
   }, [actions])
+
   const commonProps = props.isEdit ? {} : props
   const store = useStore()
   useEffect(() => {
@@ -39,11 +42,65 @@ export function Glb(
     }
   }, [])
 
+  const onClick = () => {
+    const currentChoice = store.choices.filter((choice) => choice.parent === props.uuid)
+    store.setDialog({
+      content: props.dialogue.content,
+      divider: "select",
+      choices: currentChoice?.map((choice) => ({
+        label: choice.label,
+        onSelect: () => {
+          if (props.isEdit) return null
+          if (+choice.requiredMoney > +store.money) {
+            store.setDialog({
+              content: "You don't have enough money to buy this item.",
+            })
+          } else {
+            store.addMoney(-choice.requiredMoney)
+            store.setTime(store.time + 1)
+            store.setDialog({
+              content: `You have spent ${choice.requiredMoney} coins.`,
+            })
+          }
+
+          if (choice.reward.type === "money") {
+            store.setTime(store.time + 1)
+            store.setDialog({
+              content: "Thanks! here is your (" + choice.reward.amount + ") coins!",
+            })
+
+            store.addMoney(choice.reward.amount)
+          }
+          if (choice.reward.type === "item") {
+            store.setTime(store.time + 1)
+            store.setDialog({
+              content: "Thanks! here is your Reward (" + choice.reward.item + ")!",
+            })
+            store.addItemToInventory(choice.reward.item)
+          }
+          if (choice.reward.type === "energy") {
+            store.setTime(store.time + 1)
+            store.setDialog({
+              content: "Thanks! here is your Reward (" + choice.reward.amount + ") energy!",
+            })
+            store.addEnergy(choice.reward.amount)
+          }
+        },
+      })),
+    })
+  }
+
   return (
-    <RigidBody name={props.uuid} type="fixed" colliders="trimesh">
-      <group uuid={props.uuid} ref={group} {...commonProps} dispose={null}>
-        <primitive object={scene} dispose={null} />
-      </group>
+    <RigidBody name={props.type === "misc" ? props.uuid : undefined} type="fixed" colliders="trimesh">
+      {props.type === "triggerPoint" ? (
+        <Box onClick={onClick} args={[1, 1, 1]} {...commonProps}>
+          <meshBasicMaterial opacity={0.5} color={"black"} transparent />
+        </Box>
+      ) : (
+        <group onClick={onClick} uuid={props.uuid} ref={group} {...commonProps} dispose={null}>
+          <primitive object={scene} dispose={null} />
+        </group>
+      )}
     </RigidBody>
   )
 }

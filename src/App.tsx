@@ -17,16 +17,38 @@ export const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 export default function App() {
   const store = useStore()
   const [died, setDied] = useState(0)
+  const time = store.time % 4
+  let timeSrc = "night"
+  if (time === 1) timeSrc = "morning"
+  if (time === 2) timeSrc = "noon"
+  if (time === 3) timeSrc = "afternoon"
+  if (time === 0) timeSrc = "night"
 
   return (
     <div className="w-screen h-screen">
       <SceneText />
       <Dialogue />
 
-      <div className="fixed z-40 w-full top-4 flex  gap-4 p-4">
-        <div className="text-4xl mr-auto relative flex items-end">
-          🪙
-          <span className="text-white text-sm">x{store.money}</span>
+      <div className="fixed z-40 w-full top-0 flex  gap-4">
+        <div className="w-48  mr-auto grid gap-8  p-2 bg-opacity-50 bg-base-100 grid-cols-3">
+          <div className="flex w-full items-center justify-center flex-col gap-2">
+            <img className=" w-6 h-6 top-0 right-0" src="/money.png" alt="clock" />
+            <span className="text-white text-xs">x{store.money}</span>
+          </div>
+          <div className="flex w-full items-center justify-center flex-col gap-2">
+            <img className=" w-6 h-6 top-0 right-0" src={`/energy.png`} alt="clock" />
+
+            <span className="text-white text-xs">x{store.energy}</span>
+          </div>
+          <div className="flex w-full items-center justify-center flex-col gap-2 mr-auto">
+            <img className=" w-6 h-6 top-0 right-0" src={`/${timeSrc}.png`} alt="clock" />
+            <span className="text-white text-xs">
+              {time === 1 && "Morning"}
+              {time === 2 && "Noon"}
+              {time === 3 && "Evening"}
+              {time === 0 && "Night"}
+            </span>
+          </div>
         </div>
         <button
           onClick={() => {
@@ -45,7 +67,7 @@ export default function App() {
                 })),
             })
           }}
-          className="bg-base-200 text-white px-4 py-2 rounded"
+          className="bg-base-200 h-fit text-white px-4 py-2 rounded"
         >
           Change location
         </button>
@@ -77,7 +99,13 @@ export default function App() {
             position={[0, -15, 0]}
           />
           <KeyboardControls map={keyboardMap}>
-            <Ecctrl onCollisionEnter={(e) => store.addItemToInventory(e.colliderObject.name)} animated>
+            <Ecctrl
+              maxVelLimit={3}
+              onCollisionEnter={(e) => {
+                store.addItemToInventory(e.colliderObject.name)
+              }}
+              animated
+            >
               <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
                 <Hero />
               </EcctrlAnimation>

@@ -14,7 +14,6 @@ export function Dialogue() {
 
   const { dialog } = store
   const showDialogue = dialog ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-
   return (
     <div
       onClick={handleDialogueClick}
@@ -30,11 +29,18 @@ export function Dialogue() {
           <div className="text-xl w-full">{text}</div>
         </div>
         <div className="grid gap-4 w-full">
-          {dialog?.divider && <div className="divider">{dialog.divider}</div>}
+          {dialog?.choices && <div className="divider" />}
           {dialog?.choices && (
             <div className="grid gap-2">
               {dialog.choices.map((choice, i) => (
-                <button key={i} onClick={choice.onSelect} className="btn w-full btn-sm btn-outline">
+                <button
+                  key={i}
+                  onClick={(e) => {
+                    if (choice?.onSelect) e.stopPropagation()
+                    choice?.onSelect()
+                  }}
+                  className="btn w-full btn-sm btn-outline"
+                >
                   {choice.label}
                 </button>
               ))}

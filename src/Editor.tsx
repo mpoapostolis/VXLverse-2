@@ -1,12 +1,11 @@
-import { Environment, Html, KeyboardControls, TransformControls } from "@react-three/drei"
+import { Environment, KeyboardControls, TransformControls } from "@react-three/drei"
 import { Canvas, useThree, Vector3 } from "@react-three/fiber"
 import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
 import { useRef, useState } from "react"
 import * as THREE from "three"
 import { isMobile } from "./App"
-import { Dialogue } from "./components/dialogue"
-import { AllGLBType, allGlbTypes, Glb } from "./components/glb"
+import { allGlbTypes, Glb } from "./components/glb"
 import { animationSet, characterURL, Hero, keyboardMap } from "./components/hero"
 import Lights from "./components/lights"
 import { allScenes, Scene } from "./components/scene"
@@ -26,7 +25,7 @@ export default function Editor() {
     })
   }
 
-  const addGlb = (glb: AllGLBType) => {
+  const addGlb = (glb: { name: string; type: "npc" | "misc" | "triggerPoint" }) => {
     const [x, y, z] = ref.current.toArray()
     const uuid = new THREE.Object3D().uuid
     store.setSelectedGlb(uuid)
@@ -34,7 +33,15 @@ export default function Editor() {
     store.addGlb({
       uuid,
       name: glb?.name,
-      position: [x - 0.5, y, z - 0.5],
+      glbName: glb?.name,
+      position: [x - 1.5, y, z - 1.5],
+      shownTime: {
+        morning: true,
+        afternoon: true,
+        evening: true,
+        night: true,
+        noon: true,
+      },
       scale: [1, 1, 1],
       rotation: [0, 0, 0],
       scene: store.scene,
@@ -63,10 +70,7 @@ export default function Editor() {
       <Settings />
       <div
         className={cn(
-          "fixed gap-4 z-40 md:top-4  top-0 justify-between bg-base-200 w-full px-4  ml-auto md:right-4 flex md:justify-end md:w-fit",
-          {
-            "top-11": store.selectedGlb,
-          },
+          "fixed gap-4 z-40 top-0 justify-between bg-base-200 w-full px-4  ml-auto md:right-4 flex md:justify-end md:w-fit",
         )}
       >
         <button className="btn  rounded-none bg-base-200 btn-sm text-white" onClick={clearGlbs}>
@@ -102,6 +106,11 @@ export default function Editor() {
                   <a>{glb?.name}</a>
                 </li>
               ))}
+
+            <div className="divider m-0" />
+            <li onClick={() => addGlb({ name: "Trigger Point", type: "triggerPoint" })}>
+              <a>Trigger Point</a>
+            </li>
           </ul>
         </div>
         <div className="dropdown">
@@ -121,14 +130,13 @@ export default function Editor() {
           </ul>
         </div>
       </div>
-      {isMobile && (!store.dialog || store.sceneText) ? (
+      {isMobile && !store.settingsExpanded && (!store.dialog || store.sceneText) ? (
         <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} />
       ) : (
         <div className="fixed hidden md:block z-40 bottom-4 select-none pointer-events-none left-4">
           <img className="w-44" src="/keyControls.png" alt="control keys" />
         </div>
       )}
-      <Dialogue />
       <Canvas key={store.scene + died} shadows>
         <Environment background preset="night" />
         <Lights />
@@ -154,15 +162,21 @@ function Content({ rref }: { rref: React.MutableRefObject<Vector3> }) {
       <Scene />
       {store.glbs
         .filter((e) => e.scene === store.scene)
+
         .map((glb) => (
           <TransformControls
             key={glb?.uuid}
             enabled
+            onClick={() => store.setSelectedGlb(glb?.uuid)}
+            onDoubleClick={() => {
+              const mode =
+                store.transformMode === "translate" ? "scale" : store.transformMode === "scale" ? "rotate" : "translate"
+              store.setTransformMode(mode)
+            }}
             mode={store.transformMode}
             position={glb?.position}
             rotation={glb?.rotation}
             scale={glb?.scale}
-            onClick={() => store.setSelectedGlb(glb?.uuid)}
             showX={store.selectedGlb === glb?.uuid}
             showY={store.selectedGlb === glb?.uuid}
             showZ={store.selectedGlb === glb?.uuid}
@@ -178,17 +192,14 @@ function Content({ rref }: { rref: React.MutableRefObject<Vector3> }) {
             }}
           >
             <mesh>
-              {store.selectedGlb === glb?.uuid && (
-                <Html sprite position={[0, -0.5, 0]} center>
-                  {/* <Controls onDelete={deleteNpc} onChangeMode={setMode} /> */}
-                </Html>
-              )}
               <Glb {...glb} isEdit />
             </mesh>
           </TransformControls>
         ))}
       <KeyboardControls map={keyboardMap}>
         <Ecctrl
+          enabledTranslations={store.settingsExpanded ? [false, true, false] : [true, true, true]}
+          enabledRotations={store.settingsExpanded ? [false, false, false] : [true, true, true]}
           maxVelLimit={10}
           name="hero1"
           onContactForce={(payload) => {
