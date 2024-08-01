@@ -4,16 +4,16 @@ import { Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
 import { useRef, useState } from "react"
 import * as THREE from "three"
-import { isMobile } from "./App"
-import { allGlbTypes, Glb } from "./components/glb"
-import { animationSet, characterURL, Hero, keyboardMap } from "./components/hero"
-import Lights from "./components/lights"
-import { allScenes, Scene } from "./components/scene"
-import { Settings } from "./components/settings"
-import { useStore } from "./lib/store"
-import { cn, debounce } from "./lib/utils"
+import { allGlbTypes, Glb } from "../components/glb"
+import { animationSet, characterURL, Hero, keyboardMap } from "../components/hero"
+import Lights from "../components/lights"
+import { allScenes, Scene } from "../components/scene"
+import { Settings } from "../components/settings"
+import { useStore } from "../lib/store"
+import { cn, debounce } from "../lib/utils"
+import { isMobile } from "./game"
 
-export default function Editor() {
+export function Editor() {
   const store = useStore()
   const ref = useRef<THREE.Vector3>(new THREE.Vector3())
   const [died, setDied] = useState(0)

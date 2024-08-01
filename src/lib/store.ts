@@ -1,6 +1,6 @@
 "use client"
 
-import { TransformMode } from "@/Editor"
+import { TransformMode } from "@/pages/editor"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 

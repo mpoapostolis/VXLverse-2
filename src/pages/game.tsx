@@ -2,19 +2,22 @@ import { Environment, KeyboardControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import { CuboidCollider, Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
-import { animationSet, characterURL, Hero, keyboardMap } from "./components/hero"
-import Lights from "./components/lights"
+import { animationSet, characterURL, Hero, keyboardMap } from "../components/hero"
+import Lights from "../components/lights"
 
 import { useState } from "react"
-import { Dialogue } from "./components/dialogue"
-import { Glb } from "./components/glb"
-import { allScenes, Scene } from "./components/scene"
-import { SceneText } from "./components/sceneText"
-import { useStore } from "./lib/store"
-import { cn } from "./lib/utils"
+import { useParams } from "react-router-dom"
+import { Dialogue } from "../components/dialogue"
+import { Glb } from "../components/glb"
+import { allScenes, Scene } from "../components/scene"
+import { SceneText } from "../components/sceneText"
+import { useStore } from "../lib/store"
+import { cn } from "../lib/utils"
 
 export const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-export default function App() {
+export function Game() {
+  const { id } = useParams()
+  console.log(id)
   const store = useStore()
   const [died, setDied] = useState(0)
   const time = store.time % 4

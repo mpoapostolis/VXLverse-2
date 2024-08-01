@@ -1,18 +1,23 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import App from "./App.tsx"
-import Editor from "./Editor.tsx"
 import "./index.css"
+import { Editor } from "./pages/editor.tsx"
+import { Game } from "./pages/game.tsx"
+import { Main } from "./pages/main.tsx"
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <Main />,
   },
   {
     path: "editor",
     element: <Editor />,
+  },
+  {
+    path: "/:id",
+    element: <Game />,
   },
 ])
 
