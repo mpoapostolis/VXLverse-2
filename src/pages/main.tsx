@@ -1,3 +1,4 @@
+import { getClientPb } from "@/lib/pb"
 import { Link } from "react-router-dom"
 
 export function Main() {
@@ -19,6 +20,13 @@ export function Main() {
     },
   ]
 
+  const pb = getClientPb()
+  pb.collection("Games")
+    .getFullList()
+    .then((res) => {
+      console.log(res)
+    })
+
   return (
     <div>
       <main className="min-h-screen bg-base-300 p-4">
@@ -31,8 +39,8 @@ export function Main() {
         <div className="divider" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2  md:grid-cols-3  xl:grid-cols-3 2xl:grid-cols-5">
           {games.map((game, index) => (
-            <Link to={`/${game.title}`}>
-              <div key={game.title} className="card  bg-base-100 w-full  shadow-xl">
+            <Link key={game.title} to={`/${game.title}`}>
+              <div className="card  bg-base-100 w-full  shadow-xl">
                 <figure className="bg-black  h-60 ">
                   <img src="/bg-game.png" alt="Shoes" className="object-scale-down opacity-40 h-full" />
                 </figure>
