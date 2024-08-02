@@ -1,181 +1,126 @@
-# Game Scenario
+# VXLverse
 
-## DAY 1
+VXLverse is like a toy box for building your own 3D video games. Imagine you're playing with your favorite toy set, placing characters around, and creating fun stories with them. That's exactly what VXLverse does, but in a digital world.
 
-*"Sleep, the cousin of death, visits us each night."*
+## Key Features
 
-**Scene:** John wakes up, looks in the mirror.
+- **Drag-and-Drop Interface:** At the heart of VXLverse is an intuitive interface that allows for the placement and manipulation of 3D objects within the scene, akin to interactive digital architecture. This interface makes scene construction as simple as clicking and dragging objects into place.
 
-**Dialogue:**
-- **John:** "Another day..."
+- **Customizable Asset Library:** VXLverse provides a comprehensive library of 3D assets, including customizable meshes, materials, and textures. These assets can be tailored to your specifications, offering vast creative flexibility when designing your scenes.
 
-**Task 1:** Go to the kitchen and read the note on the fridge.
+- **Transformation Tools:** VXLverse features built-in tools for object transformation. These allow for the scaling, rotation, and relocation of objects, facilitating precise control over scene composition.
 
-**Note:** "Don't forget to pick up your repaired watch from Emma at the convenience store."
+- **Import and Export Functionality:** Collaborative design and sharing are made easy with VXLverse. The platform supports the export and import of 3D scene files, enabling seamless cooperation between users and facilitating the distribution of your creations.
 
-**Task 2:** Retrieve your watch from the convenience store.
+- **Quest Creation & NPCs:** Beyond environmental design, VXLverse integrates narrative elements with its quest creation feature. This allows users to breathe life into their 3D scenes, incorporating Non-Player Characters (NPCs) and crafting engaging storylines complete with dialogues and tasks.
 
-**Scene:** John heads to the convenience store.
+## How to Get Started
 
-**Dialogue:**
-- **Emma:** "John! Here's your watch, good as new. I still don't understand how you keep breaking it."
-- **John:** "Thanks, Emma. I wish I knew."
+Try out [**demo**](http://vxlverse.com/) 
 
-**Task 3:** Return home and complete a few tasks (e.g., water plants, check mail).
 
-**End of Day 1:** John goes to bed.
+- **Adding 3D Assets:** Start by populating your scene with 3D objects. Click on the "Nodes" -> "RPG Entity" button and select a mesh from the drop-down menu.
 
----
+- **Manipulating Objects:** Once an object is placed, you can move it, rotate it, or adjust its size using the available transformation tools. 
 
-## DAY 2
+- **Applying Materials:** For more customization, apply different materials to your objects. Navigate to the "Materials" tab in the Inspector and select a material. Click on the object to apply your selection.
 
-*"Yet, each morning, we rise with the memory of yesterday intact."*
+- **Saving and Sharing Your Work:** VXLverse provides functionality to save your progress and share your work. Export your scene as a JSON file for easy distribution and future editing. Importing a previously saved scene is as simple as uploading the corresponding JSON file.
 
-**Scene:** John wakes up. Brief flashback of darkness and a feeling of being trapped.
+- **Creating a Story:** Make your game interactive by adding quests and NPCs. Select a node in your scene and open the Quest Editor in the Inspector Bar. Fill in the relevant fields to set the quest's name and initial dialogue. 
 
-**Dialogue:**
-- **John:** "Just a bad dream..."
+VXLverse is designed to make the process of creating 3D story games accessible and engaging, whether you're a hobbyist game designer or a professional developer. Enjoy the flexibility of our tools and bring your stories to life in a vibrant 3D world.
 
-**Task 1:** Open the door to find Mark.
+Remember to experiment with different nodes, materials, and transformations to create unique and immersive 3D scenes. The intuitive interface and powerful features of VXLverse make it easy for users of all skill levels to design and share their creations.
 
-**Dialogue:**
-- **Mark:** "Hey John, did you forget about our fishing trip today?"
-- **John:** "Fishing trip? I don't remember... but sure, let's go."
+# Quest Creation Guide
 
-**Task 2:** Go fishing with Mark.
+This guide explains how to create a quest using the Quest Editor in our platform.
 
-**Scene:** At the lake, fishing mini-game.
 
-**Dialogue:**
-- **Mark:** "Remember the last time we were here, John? When you fell into the water trying to reel in that big catch?"
-- **John:** "I... don't remember that."
+1) Select a node in your workspace where you would like to create your quest.
 
-**Task 3:** Return home, find an old wet and torn fishing hat.
+ 
+2) Open the Quest Editor  In the Inspector Bar on the side, select the **Quest Editor**.
 
-**End of Day 2:** John goes to bed.
+3)  Create a Quest Click on the "Create New Quest" button.
 
----
+4) Edit the Quest Fields
+Fill in the fields with relevant details about your quest. Here's what each field represents:
 
-## DAY 3
+   * Name  This is the name of your quest. It should be unique and descriptive to help differentiate it from other quests. 
 
-*"These memories, echoes of a past self, linger in our minds, but who are we truly?"*
+   * Initial Dialogue This is the dialogue that the Non-Player Character (NPC) tells the player when the hero interacts with it for the first time.
 
-**Scene:** John wakes up. Phone call from Sarah. Memory of being trapped in darkness is stronger.
+   *  Required Item to Complete This is an optional field. If specified, it represents an item that the player needs to have in their inventory for the quest to be marked as completed.
 
-**Dialogue:**
-- **Sarah:** "John, have you seen the painting you left at my studio? It's absolutely brilliant!"
-- **John:** "Painting? Sarah, I don't remember..."
+   * Quest Complete Dialogue This is the dialogue that the NPC tells the player when they bring the required item back to them.
 
-**Task 1:** Go to Sarah's studio.
+   * Reward This is an optional field. If specified, this represents a reward that the player will receive in their inventory upon completion of the quest.
+Remember, the 'Required Item to Complete', 'Quest Complete Dialogue', and 'Reward' fields are all optional and can be left blank if not applicable to your quest.
 
-**Scene:** At the studio, John sees a beautiful painting he doesn't remember creating.
+That's all you need to create a quest! Once you're done, don't forget to save your work. Happy questing!
 
-**Dialogue:**
-- **Sarah:** "You really outdid yourself this time, John."
-- **John:** "Thanks, Sarah. I wish I could remember painting it."
 
-**Task 2:** Return home, puzzled and frightened.
+## Getting Started
 
-**End of Day 3:** John goes to bed.
+To set up the project locally, follow these steps:
 
----
+1. Clone the repository:
+```
+git clone <https://github.com/mpoapostolis/VXLverse.git>
+```
 
-## DAY 4
+2. Install dependencies:
 
-*"In a world where memory survives death, who could ever know the boundaries of their existence?"*
+```
+npm install
+```
 
-**Scene:** John wakes up, restless. Brief flashback of being inside a coffin.
+3. Start the development server:
 
-**Dialogue:**
-- **John:** "Those strange things... I need answers."
+```
+npm run start
+```
 
-**Task 1:** Go to the kitchen and find a new note on the fridge.
 
-**Note:** "John, left some books for you at the library. - Peter"
+4. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to see the application in action.
 
-**Task 2:** Retrieve books from the library.
+## Contributing
 
-**Scene:** At the library.
+We welcome contributions from the community. Please submit your
+changes via pull requests, and we will review and merge them as appropriate.
 
-**Dialogue:**
-- **Librarian:** "John, Peter left some psychology books for you. He said you wanted to learn more about memory loss."
-- **John:** "Wasn't there another librarian working here yesterday?"
-- **Librarian:** "Yesterday? I've been working here for years."
 
-**Task 3:** Read the books throughout the day.
+# Instructions for Use
 
-**End of Day 4:** John goes to bed.
+1. To add a 3D object to your scene, navigate to "Nodes" -> RPG Entity button and select a mesh from the drop-down menu.
 
----
+2. Once the object is added, you can manipulate it using the transformation tools provided:
+   - To move the object, click and drag it to the desired position within the grid.
+   - To rotate the object, select the "Rotate" tool and drag the rotation handles.
+   - To scale the object, select the "Scale" tool and drag the scaling handles.
 
-## DAY 5
+3. To add a material to your object, click on the "Materials" tab in the Inspector and choose a material from the list. Then, click on the object to apply the material.
 
-*"Are we simply vessels, carrying the past into the present, guided by memories not truly ours?"*
+4. Continue adding objects and materials to build your 3D scene.
 
-**Scene:** John wakes up. Flashback, clearer - trapped in a coffin.
+5. To save your work, click on the "Export" button to download the scene as a JSON file. You can also import a previously saved JSON file by clicking the "Import" button and selecting the file from your computer.
 
-**Dialogue:**
-- **John:** "These aren't just dreams. What's happening to me? I need to figure this out."
+6. If you need to delete a node, select the node and press Delete.
 
-**Task 1:** Phone rings, it's Emma.
+Explore different nodes, materials, and transformations to create unique and immersive 3D scenes. The intuitive interface and powerful features of VXLverse make it easy for users of all skill levels to design and share their creations.
 
-**Dialogue:**
-- **Emma:** "John, I think you left your watch here again. Could you come and pick it up?"
-- **John:** "Again? Are you sure it's mine?"
 
-**Task 2:** Retrieve the watch from Emma.
 
-**Scene:** At the convenience store.
+# Roadmap
+You can see the roadmap
+ [here](https://github.com/users/mpoapostolis/projects/2/views/1)
 
-**Dialogue:**
-- **Emma:** "Here's your watch again. You really need to take better care of it."
-- **John:** "Thanks, Emma. I'll try."
 
-**Task 3:** Return home, even more puzzled.
+# Contributing
 
-**End of Day 5:** John goes to bed.
+We welcome contributions from the community. Please submit your changes via pull requests, and we will review and merge them as appropriate.
 
----
 
-## DAY 6
 
-*"Every night we surrender to sleep, to death, only to awaken as though nothing has happened."*
-
-**Scene:** John wakes up, memory of the coffin even clearer - sensation of confined space, smell of earth.
-
-**Dialogue:**
-- **John:** "I've...died. Is this what's happening to everyone?"
-
-**Task 1:** Phone rings, it's Mark.
-
-**Dialogue:**
-- **Mark:** "John, are we up for another fishing trip? The weather's perfect."
-- **John:** "Mark, when we went fishing the other day...Did anything strange happen?"
-- **Mark:** "Strange? You seemed like yourself. Why?"
-- **John:** "I'm not sure... Just feeling a bit off, I guess."
-
-**Task 2:** Spend the day in introspection, reading more from the books.
-
-**End of Day 6:** John goes to bed.
-
----
-
-## DAY 7
-
-*"In a world where yesterday's memories are today's reality, who can discern the transition? Who would care to question the dance of death and rebirth?"*
-
-**Scene:** John wakes up and looks in the mirror.
-
-**Dialogue:**
-- **John:** "We're all dying... Every time we sleep, we die. We wake up with all the memories of the person before, living lives oblivious of our death."
-
-**Task 1:** Confront your friends with your findings.
-
-**Scene:** John meets Emma, Mark, and others.
-
-**Dialogue:**
-- **John:** "I've realized something. Every time we sleep, we die. We wake up with the memories of the person we were before, but we're not the same."
-- **Emma:** "John, that sounds crazy..."
-- **Mark:** "Actually, I've felt strange things too. Maybe there's something to this."
-
-**End of Game:** Reactions are mixed, leaving the ending open-ended.
