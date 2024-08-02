@@ -3,33 +3,12 @@
 import { TransformMode } from "@/pages/editor"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
+import { defaultStore } from "./defaultStore"
 
 export type InventoryItem = string
 export type Inventory = InventoryItem[]
 
-const defaultGlbs = [
-  {
-    uuid: "9e71e737-2202-4555-8d3b-63a5e93ad485",
-    name: "woman_1",
-    glbName: "woman_1",
-    position: [-1.5080528361722827, -0.8396196961402893, -2.4885654955470553],
-    shownTime: {
-      morning: true,
-      afternoon: true,
-      evening: true,
-      night: true,
-      noon: true,
-    },
-    scale: [1, 1.0000077281270214, 1],
-    rotation: [0.16584531517452566, 0.2155495530204592, -0.20369265494141234],
-    scene: "park",
-    type: "npc",
-    dialogue: {
-      content:
-        "Arin was once a revered knight in the kingdom of Eldoria, known for his bravery and wisdom. \n  Born to a humble blacksmith, Arin rose through the ranks of the royal guard, demonstrating unparalleled skill with the sword and a keen strategic mind. \n  After decades of service, during which he defended the realm from dragons, dark wizards, and marauding armies, Arin retired from active duty.\n  Now, he dedicates his life to guiding new adventurers, sharing his vast knowledge of the land, its history, and the secrets that lie within its borders. \n  Despite his age, Arin remains sharp and is deeply respected by all who know him.\n",
-    },
-  },
-]
+const defaultGlbs = [] as GLBType[]
 
 export type Choice = {
   parent: string
@@ -185,17 +164,17 @@ export const useStore = create(
       setDialog: (dialog) => set({ dialog }),
     }),
     {
-      version: 1.1,
-      name: "yesterday-echoes", // name of the item in the storage (must be unique)
+      version: 1.3,
+      name: "vxlverse", // name of the item in the storage (must be unique)
       partialize: (state) => ({
+        ...defaultStore,
         ...state,
-
         settingsExpanded: false,
         dialog: undefined,
         money: 0,
         inventory: [],
         scene: state.scene,
-        glbs: state.glbs,
+        glbs: state.glbs?.length ? state.glbs : (defaultStore.glbs as GLBType[]),
       }),
     },
   ),

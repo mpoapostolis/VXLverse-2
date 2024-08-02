@@ -110,6 +110,7 @@ export const allGlbTypes = [
   { name: "farmer", type: "npc" },
   { name: "woman_1", type: "npc" },
   { name: "woman_2", type: "npc" },
+  { name: "me", type: "npc" },
   { name: "coin", type: "misc", collectable: true },
 ] as const
 export type AllGLBType = (typeof allGlbTypes)[number]
