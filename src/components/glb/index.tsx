@@ -23,8 +23,7 @@ export function Glb(
     },
 ) {
   const group = useRef<THREE.Group>()
-  const name = props.type === "triggerPoint" ? "coin" : props.glbName
-  const { scene, animations } = useGltfMemo(`/glb/${name}.glb`)
+  const { scene, animations } = useGltfMemo(props.url)
   const { actions } = useAnimations(animations, group)
 
   useEffect(() => {
@@ -91,7 +90,7 @@ export function Glb(
   }
 
   return (
-    <RigidBody name={props.type === "misc" ? props.uuid : undefined} type="fixed" colliders="trimesh">
+    <>
       {props.type === "triggerPoint" ? (
         <Box onClick={onClick} args={[1, 1, 1]} {...commonProps}>
           <meshBasicMaterial opacity={0.5} color={"black"} transparent />
@@ -101,6 +100,19 @@ export function Glb(
           <primitive object={scene} dispose={null} />
         </group>
       )}
+    </>
+  )
+}
+
+export function GameGlb(
+  props: JSX.IntrinsicElements["group"] &
+    GLBType & {
+      isEdit?: boolean
+    },
+) {
+  return (
+    <RigidBody name={props.type === "misc" ? props.uuid : undefined} type="fixed" colliders="trimesh">
+      <Glb {...props} />
     </RigidBody>
   )
 }
@@ -114,6 +126,3 @@ export const allGlbTypes = [
   { name: "coin", type: "misc", collectable: true },
 ] as const
 export type AllGLBType = (typeof allGlbTypes)[number]
-allGlbTypes.forEach((type) => {
-  useGLTF.preload(`/glb/${type}.glb`)
-})

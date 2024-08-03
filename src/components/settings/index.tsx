@@ -148,11 +148,7 @@ export function Settings() {
                 ❌
               </button>
             </div>
-            <div
-              className={cn("p-2 py-4  overflow-auto grid gap-4 items-start grid-cols-[100px_1fr]", {
-                hidden: !store.settingsExpanded,
-              })}
-            >
+            <div className={cn("p-2 py-4  overflow-auto grid gap-4 items-start grid-cols-[100px_1fr]", {})}>
               <label className="label  text-xs ">Name:</label>
               <input
                 key={current?.dialogue?.content}

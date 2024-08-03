@@ -3,7 +3,6 @@
 import { TransformMode } from "@/pages/editor"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import { defaultStore } from "./defaultStore"
 
 export type InventoryItem = string
 export type Inventory = InventoryItem[]
@@ -37,6 +36,7 @@ export type GLBType = {
   uuid: string
   name: string
   glbName: string
+  url: string
   position: [number, number, number]
   rotation: [number, number, number]
   scale: [number, number, number]
@@ -56,11 +56,19 @@ export type GLBType = {
 export type SceneConfig = Record<string, number>
 
 export type Store = {
+  gameConf?: {
+    scenes: string[]
+    glbs: GLBType[]
+    choices: Choice[]
+  }
   money: number
   energy: number
+  addScene: (scene: string) => void
   addEnergy: (amount: number) => void
   removeEnergy: (amount: number) => void
   time: number
+  scenes: string[]
+  removeScene: (scene: string) => void
   setTime: (time: number) => void
   choices: Choice[]
   addChoice: (choice: Choice) => void
@@ -96,6 +104,12 @@ export const useStore = create(
     (set) => ({
       money: 0,
       choices: [],
+      scenes: [],
+      removeScene: (scene) =>
+        set((state) => ({
+          scenes: state.scenes.filter((n) => n !== scene),
+        })),
+      addScene: (scene) => set((state) => ({ scenes: [...state.scenes, scene] })),
       addChoice: (choice) => set((state) => ({ choices: [...state.choices, choice] })),
       removeChoice: (choice) =>
         set((state) => ({
@@ -166,16 +180,6 @@ export const useStore = create(
     {
       version: 1.3,
       name: "vxlverse", // name of the item in the storage (must be unique)
-      partialize: (state) => ({
-        ...defaultStore,
-        ...state,
-        settingsExpanded: false,
-        dialog: undefined,
-        money: 0,
-        inventory: [],
-        scene: state.scene,
-        glbs: state.glbs?.length ? state.glbs : (defaultStore.glbs as GLBType[]),
-      }),
     },
   ),
 )

@@ -1,40 +1,186 @@
-import { Environment, KeyboardControls, TransformControls } from "@react-three/drei"
-import { Canvas, useThree, Vector3 } from "@react-three/fiber"
-import { Physics } from "@react-three/rapier"
-import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
-import { useRef, useState } from "react"
+import { Model3d, use3dModels } from "@/hooks/use3dModels"
+import { useGameConfigStore } from "@/lib/game-store"
+import { Environment, OrbitControls } from "@react-three/drei"
+import { Canvas } from "@react-three/fiber"
+import { useGame } from "ecctrl"
+import { DragEvent, useState } from "react"
 import * as THREE from "three"
-import { allGlbTypes, Glb } from "../components/glb"
-import { animationSet, characterURL, Hero, keyboardMap } from "../components/hero"
+import { Glb } from "../components/glb"
 import Lights from "../components/lights"
-import { allScenes, Scene } from "../components/scene"
-import { Settings } from "../components/settings"
-import { useStore } from "../lib/store"
 import { cn, debounce } from "../lib/utils"
-import { isMobile } from "./game"
+
+const FileIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    {...props}
+    viewBox="0 0 24 24"
+    strokeWidth="1.5"
+    stroke="currentColor"
+    className="h-4 w-4"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+    />
+  </svg>
+)
+
+const FolderIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    {...props}
+    viewBox="0 0 24 24"
+    strokeWidth="1.5"
+    stroke="currentColor"
+    className="h-4 w-4"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
+    />
+  </svg>
+)
+
+const categories = [
+  "Scenes & Levels",
+  "Nature",
+  "Weapons",
+  "People & Characters",
+  "Objects",
+  "Transport",
+  "Buildings",
+  "Other",
+  "Food & Drink",
+  "Buildings (Architecture)",
+  "Animals",
+  "Furniture & Decor",
+  "Clutter",
+]
+
+interface ModelSearchProps {
+  isLoading: boolean
+  total: number
+  changeSearchTerm: (str: string) => void
+  activeTab: string
+  page: number
+  totalPages: number
+}
+
+const ModelSearch = ({ isLoading, total, changeSearchTerm, activeTab, page, totalPages }: ModelSearchProps) => {
+  return (
+    <div className="w-full flex px-4 items-center gap-2 my-2">
+      {isLoading ? (
+        "Loading..."
+      ) : (
+        <div className="mr-auto">
+          <div className="font-bold text-xs">{`Page: ${page + 1}/${totalPages}`}</div>
+          <div className=" font-bold text-xs">{`Total: ${total}  models`}</div>
+        </div>
+      )}
+      <input
+        key={activeTab}
+        onChange={(e) => changeSearchTerm(e.target.value)}
+        type="text"
+        placeholder="🔍   Search...."
+        className="input input-sm input-bordered"
+      />
+    </div>
+  )
+}
+
+interface ModelGridProps {
+  data: Model3d[]
+  isLoading: boolean
+  page: number
+  setPage: (page: number) => void
+  totalPages: number
+}
+
+const ModelGrid = ({ data, isLoading, page, setPage, totalPages }: ModelGridProps) => {
+  return (
+    <div className="w-full px-4  pb-4  flex place-items-end flex-wrap gap-2">
+      <button
+        onClick={() => setPage(page - 1)}
+        className={cn("w-32 h-32 text-center justify-center bg-base-300 rounded-lg grid place-items-center", {
+          hidden: page === 0 || isLoading || data?.length === 0,
+        })}
+      >
+        Previous <br /> Page
+      </button>
+
+      {isLoading && (
+        <div className="w-full my-auto h-60 grid place-items-center text-center text-lg font-bold">Loading...</div>
+      )}
+
+      {!isLoading && data?.length === 0 && (
+        <div className="w-full my-auto h-60 grid place-items-center text-center text-lg font-bold">No models found</div>
+      )}
+
+      {data?.map((model) => (
+        <div
+          key={model.id}
+          onDragStart={(event) => {
+            event.dataTransfer.setData("application/json", JSON.stringify(model))
+          }}
+          draggable
+          className="relative rounded-lg overflow-hidden z-40"
+        >
+          <img
+            role="button"
+            src={model.thumbnail}
+            alt={model.name}
+            className="w-32 h-32 rounded-lg transition duration-125"
+          />
+          <p className="text-xs text-center absolute bottom-0 w-full bg-black bg-opacity-50 p-2 truncate">
+            {model.name}
+          </p>
+        </div>
+      ))}
+
+      <button
+        onClick={() => setPage(page + 1)}
+        className={cn("w-32 h-32 justify-center bg-base-300 rounded-lg grid place-items-center", {
+          hidden: page === totalPages - 1 || isLoading || data?.length === 0,
+        })}
+      >
+        Next <br /> Page
+      </button>
+    </div>
+  )
+}
 
 export function Editor() {
-  const store = useStore()
-  const ref = useRef<THREE.Vector3>(new THREE.Vector3())
-  const [died, setDied] = useState(0)
+  const store = useGameConfigStore()
+  const [activeTab, setActiveTab] = useState<string>(categories[0])
+  const [selectedScene, setSelectedScene] = useState<string>()
+  const [page, setPage] = useState<number>(0)
+  const [searchTerm, setSearchTerm] = useState<string>("")
+  const [newSceneName, setNewSceneName] = useState<string>("")
 
-  const clearGlbs = () => {
-    setDied((prev) => prev + 1)
-    store.glbs.forEach((glb) => {
-      if (glb?.scene === store.scene) store.removeGlb(glb)
-    })
-  }
+  useGame()
 
-  const addGlb = (glb: { name: string; type: "npc" | "misc" | "triggerPoint" }) => {
-    const [x, y, z] = ref.current.toArray()
+  const { data, isLoading, total, totalPages } = use3dModels(page, activeTab, searchTerm)
+
+  const changeSearchTerm = debounce((str: string) => {
+    setSearchTerm(str)
+    setPage(0)
+  }, 500)
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    const data = e?.dataTransfer?.getData("application/json")
+    if (!data) return
+    const parsedData = JSON.parse(data) as Model3d
     const uuid = new THREE.Object3D().uuid
-    store.setSelectedGlb(uuid)
-
     store.addGlb({
       uuid,
-      name: glb?.name,
-      glbName: glb?.name,
-      position: [x - 1.5, y, z - 1.5],
+      url: parsedData?.glb,
+      name: parsedData?.name,
+      glbName: parsedData?.name,
+      position: [0, 0, 0],
       shownTime: {
         morning: true,
         afternoon: true,
@@ -44,176 +190,158 @@ export function Editor() {
       },
       scale: [1, 1, 1],
       rotation: [0, 0, 0],
-      scene: store.scene,
-      type: glb?.type,
+      scene: selectedScene,
+      type: "npc",
     })
   }
 
-  const changeLocation = (scene: string) => {
-    store.setSelectedGlb(null)
-    store.setScene(scene)
-  }
-
-  // const saveSettings = () => {
-  //   const jsonString = JSON.stringify(store.glbs, null, 2)
-  //   const blob = new Blob([jsonString], { type: "application/json" })
-  //   const link = document.createElement("a")
-  //   link.download = `game-settings.json`
-  //   link.href = URL.createObjectURL(blob)
-  //   document.body.appendChild(link)
-  //   link.click()
-  //   document.body.removeChild(link)
-  // }
-
   return (
-    <div className="w-screen h-screen">
-      <Settings />
-      <div
-        className={cn(
-          "fixed gap-4 z-40 top-0 justify-between bg-base-200 w-full px-4  ml-auto md:right-4 flex md:justify-end md:w-fit",
-        )}
-      >
-        <button className="btn  rounded-none bg-base-200 btn-sm text-white" onClick={clearGlbs}>
-          Clear
-        </button>
-        <div className="dropdown">
-          <div
-            tabIndex={0}
-            onClick={() => store.setSelectedGlb(null)}
-            className="btn rounded-none bg-base-200 btn-sm text-white"
-          >
-            Add Glb
-          </div>
-          <ul tabIndex={0} className="menu dropdown-content bg-base-100 rounded-none z-[1] w-52 p-2 shadow">
-            <label className="label">
-              <span className="label-text">Npc</span>
-            </label>
-            {allGlbTypes
-              .filter((e) => e.type === "npc")
-              .map((glb) => (
-                <li key={glb?.name} onClick={() => addGlb(glb)}>
-                  <a>{glb?.name}</a>
-                </li>
-              ))}
-            <div className="divider m-0" />
-            <label className="label">
-              <span className="label-text">Misc</span>
-            </label>
-            {allGlbTypes
-              .filter((e) => e.type === "misc")
-              .map((glb) => (
-                <li key={glb?.name} onClick={() => addGlb(glb)}>
-                  <a>{glb?.name}</a>
-                </li>
-              ))}
+    <div className="w-screen h-screen flex">
+      <div className="h-screen border-r border-opacity-10 border-white">
+        <div
+          role="tablist"
+          className="h-fit rounded-none flex "
+          style={{
+            maxWidth: "calc(100vw - 384px)",
+          }}
+        ></div>
+        <div className="grid h-screen grid-rows-[1.5fr_1fr]  w-full relative">
+          {store.scenes.length ? (
+            <Canvas key={selectedScene} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} shadows>
+              <OrbitControls makeDefault />
+              <gridHelper args={[100, 100]} />
+              <Environment background preset="night" />
+              <Lights />
+              {store.glbs
+                .filter((glb) => glb.scene === selectedScene)
+                .map((glb) => (
+                  <Glb key={glb.uuid} {...glb} />
+                ))}
+            </Canvas>
+          ) : (
+            <div className="w-full h-full border-t bg-black bg-opacity-50 border-opacity-10 border-white grid place-items-center text-center text-lg font-bold">
+              Create a scene to start adding models
+            </div>
+          )}
+          <div className="flex w-full overflow-y-auto">
+            <div className="h-full  flex flex-col  border-r  border-white border-opacity-10 ">
+              <ul className="menu menu-xs overflow-y-auto bg-base-200   max-w-60 min-w-60">
+                <li>
+                  <details open>
+                    <summary>
+                      <FolderIcon />
+                      Current Game
+                    </summary>
+                    <ul>
+                      <li>
+                        <details open>
+                          <summary>
+                            <FolderIcon
+                              fill={store.scenes.map((e) => e.uuid).includes(selectedScene) ? "#f93" : "none"}
+                            />
+                            Scenes
+                          </summary>
+                          <ul>
+                            {store.scenes.map((scene) => (
+                              <li>
+                                <details
+                                  onClick={() => {
+                                    setSelectedScene(scene.uuid)
+                                  }}
+                                  open={selectedScene === scene.uuid}
+                                >
+                                  <summary className="flex w-full">
+                                    <FolderIcon fill={scene.uuid === selectedScene ? "#f93" : "none"} />
+                                    <span className="mr-auto">{scene.name}</span>
+                                    <button
+                                      onClick={() => {
+                                        store.removeScene(scene.uuid)
+                                        const glbs = store.glbs.filter((glb) => glb.scene === scene.uuid)
+                                        glbs.forEach((glb) => store.removeGlb(glb))
 
-            <div className="divider m-0" />
-            <li onClick={() => addGlb({ name: "Trigger Point", type: "triggerPoint" })}>
-              <a>Trigger Point</a>
-            </li>
-          </ul>
-        </div>
-        <div className="dropdown">
-          <div
-            tabIndex={0}
-            onClick={() => store.setSelectedGlb(null)}
-            className="btn rounded-none bg-base-200 btn-sm text-white"
-          >
-            Change location
+                                        setSelectedScene(undefined)
+                                      }}
+                                      className={cn("text-xs text-error ml-auto", {
+                                        hidden: scene.uuid !== selectedScene,
+                                      })}
+                                    >
+                                      delete
+                                    </button>
+                                  </summary>
+                                  <ul>
+                                    {store.glbs
+                                      .filter((glb) => glb.scene === scene.uuid)
+                                      .map((glb) => (
+                                        <li
+                                          onClick={() => {
+                                            setSelectedScene(scene.uuid)
+                                          }}
+                                        >
+                                          <a className="">
+                                            <FileIcon />
+                                            {glb.name}
+                                          </a>
+                                        </li>
+                                      ))}
+                                  </ul>
+                                </details>
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+              </ul>
+              <div className="divider mt-auto my-0" />
+              <form
+                className="p-4   flex w-full"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  const uuid = new THREE.Object3D().uuid
+                  const name = e.currentTarget.newSceneName.value.trim()
+                  store.addScene({
+                    uuid,
+                    name,
+                  })
+                  e.currentTarget.newSceneName.value = ""
+                  setSelectedScene(uuid)
+                }}
+              >
+                <input
+                  key={selectedScene}
+                  type="text"
+                  name="newSceneName"
+                  value={newSceneName}
+                  onChange={(e) => setNewSceneName(e.target.value)}
+                  placeholder="New Scene Name"
+                  className="input input-bordered input-xs rounded-none"
+                />
+                <input type="submit" className="btn btn-xs " />
+              </form>
+            </div>
+
+            <div className="w-full overflow-y-auto ">
+              <ModelSearch
+                page={page}
+                totalPages={totalPages}
+                isLoading={isLoading}
+                total={total}
+                changeSearchTerm={changeSearchTerm}
+                activeTab={activeTab}
+              />
+              <div className="divider my-0" />
+              <div className="flex">
+                <ModelGrid data={data} isLoading={isLoading} page={page} setPage={setPage} totalPages={totalPages} />
+              </div>
+            </div>
           </div>
-          <ul tabIndex={0} className="menu dropdown-content bg-base-100 rounded-none z-[1] w-52 p-2 shadow">
-            {allScenes.map((scene) => (
-              <li key={scene} onClick={() => changeLocation(scene)}>
-                <a>{scene}</a>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
-      {isMobile && !store.settingsExpanded && (!store.dialog || store.sceneText) ? (
-        <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} />
-      ) : (
-        <div className="fixed hidden md:block z-40 bottom-4 select-none pointer-events-none left-4">
-          <img className="w-44" src="/keyControls.png" alt="control keys" />
-        </div>
-      )}
-      <Canvas key={store.scene + died} shadows>
-        <Environment background preset="night" />
-        <Lights />
-        <Physics timeStep="vary">
-          <Content rref={ref} />
-        </Physics>
-      </Canvas>
+      <div className="min-w-96 overflow-y-auto"></div>
     </div>
   )
 }
 
 export type TransformMode = "scale" | "translate" | "rotate"
-function Content({ rref }: { rref: React.MutableRefObject<Vector3> }) {
-  const store = useStore()
-
-  const updateGlb = debounce((obj: any) => {
-    store.updateGlb(obj)
-  }, 1000)
-  const t = useThree()
-  return (
-    <>
-      {/* {!isMobile && <Perf position="top-left" />} */}
-      <Scene />
-      {store.glbs
-        .filter((e) => e.scene === store.scene)
-
-        .map((glb) => (
-          <TransformControls
-            key={glb?.uuid}
-            enabled
-            onClick={() => store.setSelectedGlb(glb?.uuid)}
-            onDoubleClick={() => {
-              const mode =
-                store.transformMode === "translate" ? "scale" : store.transformMode === "scale" ? "rotate" : "translate"
-              store.setTransformMode(mode)
-            }}
-            mode={store.transformMode}
-            position={glb?.position}
-            rotation={glb?.rotation}
-            scale={glb?.scale}
-            showX={store.selectedGlb === glb?.uuid}
-            showY={store.selectedGlb === glb?.uuid}
-            showZ={store.selectedGlb === glb?.uuid}
-            onObjectChange={(e) => {
-              // @ts-ignore
-              const { position, scale, rotation } = e.target.object
-              updateGlb({
-                ...glb,
-                position: [position.x, position.y, position.z],
-                scale: [scale.x, scale.y, scale.z],
-                rotation: [rotation.x, rotation.y, rotation.z],
-              })
-            }}
-          >
-            <mesh>
-              <Glb {...glb} isEdit />
-            </mesh>
-          </TransformControls>
-        ))}
-      <KeyboardControls map={keyboardMap}>
-        <Ecctrl
-          enabledTranslations={store.settingsExpanded ? [false, true, false] : [true, true, true]}
-          enabledRotations={store.settingsExpanded ? [false, false, false] : [true, true, true]}
-          maxVelLimit={10}
-          name="hero1"
-          onContactForce={(payload) => {
-            const pos = t.scene.getObjectByName("hero1").position
-            rref.current = pos
-          }}
-          floatHeight={0.1}
-          animated
-        >
-          <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
-            <Hero />
-          </EcctrlAnimation>
-        </Ecctrl>
-      </KeyboardControls>
-    </>
-  )
-}
