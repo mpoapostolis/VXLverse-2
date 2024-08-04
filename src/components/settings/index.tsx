@@ -107,10 +107,7 @@ export function Settings() {
   const store = useStore()
   const uuid = store?.selectedGlb
   const current = store.glbs.find((glb) => glb?.uuid === uuid)
-  const unselect = () => {
-    store.setSettingsExpanded(false)
-    store.setSelectedGlb(undefined)
-  }
+
   const [selectedOption, setSelectedOption] = useState<string>()
 
   function createOption() {
@@ -126,125 +123,84 @@ export function Settings() {
   const updateGlb = (glb: Partial<GLBType>) => store.updateGlb({ ...current, ...glb })
 
   return (
-    <div
-      key={current?.uuid}
-      className={cn("w-96  fixed z-50", {
-        hidden: !current?.uuid,
-      })}
-    >
-      {uuid && (
-        <div className="drawer max-h-screen overflow-auto w-full md:max-w-lg select-none fixed bottom-0  drawer-open">
-          <div className="drawer-content  bg-base-300">
-            <div className="bg-base-100   p-2 text-xs items-center gap-4 flex w-full ">
-              <span>{current?.name}</span>
-              <button
-                onClick={() => store.setSettingsExpanded(!store.settingsExpanded)}
-                role="button"
-                className="ml-auto text-lg"
-              >
-                {store.settingsExpanded ? "-" : "▢"}
-              </button>
-              <button role="button" onClick={unselect}>
-                ❌
-              </button>
+    <div className={cn("p-4 flex flex-col  gap-2  text-xs items-start ", {})}>
+      <div>Name:</div>
+      <input
+        type="text"
+        defaultValue={current?.name}
+        onChange={(e) => {
+          updateGlb({ name: e.target.value })
+        }}
+        placeholder="Type here"
+        className="input input-bordered input-xs w-full max-w-xs"
+      />
+      <div className="divider my-0 col-span-2" />
+      <label className="label text-xs ">Dialogue</label>
+      <div className="flex flex-col   w-full  gap-2">
+        <textarea
+          onChange={(e) => {
+            updateGlb({ dialogue: { content: e.target.value } })
+          }}
+          defaultValue={current?.dialogue?.content}
+          className="textarea text-xs block rounded-none textarea-bordered w-full"
+        />
+        {store.choices
+          .filter((e) => e.parent === current?.uuid)
+          .map((obj, idx) => (
+            <div key={obj.uuid} onClick={() => setSelectedOption(obj?.uuid)}>
+              <Option {...obj} idx={idx} selected={obj.uuid === selectedOption} />
             </div>
-            <div className={cn("p-2 py-4  overflow-auto grid gap-4 items-start grid-cols-[100px_1fr]", {})}>
-              <label className="label  text-xs ">Name:</label>
-              <input
-                key={current?.dialogue?.content}
-                defaultValue={current?.name}
-                onChange={(e) => {
-                  updateGlb({ name: e.target.value })
-                }}
-                className="input placeholder:text-gray-600 rounded-none input-bordered input-xs"
-              />
-
-              <div className="divider my-0 col-span-2" />
-              <label className="label text-xs ">Dialogue</label>
-              <div className="flex flex-col   w-full  gap-2">
-                <textarea
-                  onChange={(e) => {
-                    updateGlb({ dialogue: { content: e.target.value } })
-                  }}
-                  defaultValue={current?.dialogue?.content}
-                  className="textarea text-xs block rounded-none textarea-bordered w-full"
-                />
-                {store.choices
-                  .filter((e) => e.parent === current?.uuid)
-                  .map((obj, idx) => (
-                    <div key={obj.uuid} onClick={() => setSelectedOption(obj?.uuid)}>
-                      <Option {...obj} idx={idx} selected={obj.uuid === selectedOption} />
-                    </div>
-                  ))}
-                <button
-                  onClick={createOption}
-                  className="btn rounded-none btn-xs w-full btn-outline col-span-2 btn-square"
-                >
-                  Add option
-                </button>
-              </div>
-
-              <div className="divider my-0 col-span-2" />
-
-              <label className="label  text-xs ">Shown time:</label>
-              <div className="max-h-40 overflow-auto grid gap-2 grid-cols-2">
-                {["morning", "noon", "afternoon", "evening", "night"].map((time) => (
-                  <div className="flex px-2 gap-2 w-full" key={time}>
-                    <input
-                      checked={current?.shownTime[time as keyof GLBType["shownTime"]]}
-                      type="checkbox"
-                      onChange={(e) => {
-                        updateGlb({
-                          shownTime: {
-                            ...current?.shownTime,
-                            [time]: e.target.checked,
-                          },
-                        })
-                      }}
-                      id={time}
-                      className="checkbox rounded-none checkbox-xs w-fit"
-                    />
-                    <label htmlFor={time} className="text-xs label-text w-fit">
-                      {time}
-                    </label>
-                  </div>
-                ))}
-              </div>
-
-              <div className="divider my-0 col-span-2" />
-
-              <label className="label  text-xs items-start ">Required item:</label>
-              <div className="">
-                <select
-                  onChange={(e) => {
-                    updateGlb({ requiredItem: e.target.value })
-                  }}
-                  value={current?.requiredItem}
-                  className="select rounded-none select-bordered w-full select-xs"
-                >
-                  <option value={undefined}>None</option>
-                  {store.glbs.map((k) => (
-                    <option key={k.uuid} value={k.uuid}>
-                      {k.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="divider my-0 col-span-2" />
-              <button
-                onClick={() => {
-                  store.removeGlb(current)
-                  store.setSelectedGlb(undefined)
-                }}
-                className="btn col-span-2 rounded-none btn-xs w-full btn-error btn-outline btn-square"
-              >
-                Delete
-              </button>
-            </div>
+          ))}
+        <button
+          onClick={createOption}
+          className="btn rounded-none border-white border-opacity-15 btn-xs w-full btn-outline col-span-2 btn-square"
+        >
+          Add option
+        </button>
+      </div>
+      <div className="divider my-0 col-span-2" />
+      <label className="label  text-xs ">Shown time:</label>
+      <div className="max-h-40 overflow-auto grid gap-2 grid-cols-2">
+        {["morning", "noon", "afternoon", "evening", "night"].map((time) => (
+          <div className="flex px-2 gap-2 w-full" key={time}>
+            <input
+              checked={current?.shownTime[time as keyof GLBType["shownTime"]]}
+              type="checkbox"
+              onChange={(e) => {
+                updateGlb({
+                  shownTime: {
+                    ...current?.shownTime,
+                    [time]: e.target.checked,
+                  },
+                })
+              }}
+              id={time}
+              className="checkbox rounded-none checkbox-xs w-fit"
+            />
+            <label htmlFor={time} className="text-xs label-text w-fit">
+              {time}
+            </label>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+      <div className="divider my-0 col-span-2" />
+      <label className="label  text-xs items-start ">Required item:</label>
+      <div className="">
+        <select
+          onChange={(e) => {
+            updateGlb({ requiredItem: e.target.value })
+          }}
+          value={current?.requiredItem}
+          className="select rounded-none select-bordered w-full select-xs"
+        >
+          <option value={undefined}>None</option>
+          {store.glbs.map((k) => (
+            <option key={k.uuid} value={k.uuid}>
+              {k.name}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   )
 }

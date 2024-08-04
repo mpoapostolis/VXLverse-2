@@ -19,3 +19,47 @@ canvas {
     opacity: 0;
   }
 }
+
+details summary::-webkit-details-marker {
+  background: url(/images/toggle-expand.png) center no-repeat;
+  color: transparent;
+}
+details[open] summary::-webkit-details-marker {
+  background: url(/images/toggle-collapse.png) center no-repeat;
+  color: transparent;
+}
+
+details > summary {
+  list-style-type: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details > summary::before {
+  position: absolute;
+  left: -2px;
+  content: "+";
+  font-size: 16px;
+}
+
+details[open] > summary::before {
+  position: absolute;
+  left: -2px;
+  content: "-";
+  font-size: 16px;
+}
+
+details > summary > * {
+  margin-left: 8px;
+}
+
+.menu :where(li > details > summary):after,
+.menu :where(li > .menu-dropdown-toggle):after {
+  content: "";
+  width: 0px;
+}

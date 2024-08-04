@@ -1,7 +1,4 @@
-import { getClientPb } from "@/lib/pb"
-import { Store, useStore } from "@/lib/store"
-import { useParams } from "react-router-dom"
-import useSWR from "swr"
+import { Store } from "@/lib/store"
 
 export interface Game {
   id: string
@@ -13,9 +10,8 @@ export interface Game {
 }
 
 export function useGame(id: string) {
-  const pb = getClientPb()
-  const params = useParams()
-  const res = useSWR(params.id && ["/game", params.id], async () => await pb.collection("games").getOne<Game>(id))
-  const store = useStore()
-  if (res.data.gameConf) store.setGame(res.data.gameConf)
+  // const pb = getClientPb()
+  // const params = useParams()
+  // const res = useSWR(params.id && ["/game", params.id], async () => await pb.collection("games").getOne<Game>(id))
+  // const store = useStore()
 }

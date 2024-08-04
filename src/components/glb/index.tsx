@@ -44,7 +44,7 @@ export function Glb(
   const onClick = () => {
     const currentChoice = store.choices.filter((choice) => choice.parent === props.uuid)
     store.setDialog({
-      content: props.dialogue.content,
+      content: props?.dialogue?.content,
       divider: "select",
       choices: currentChoice?.map((choice) => ({
         label: choice.label,

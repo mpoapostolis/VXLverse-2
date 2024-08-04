@@ -1,3 +1,4 @@
+import { PresetsType } from "@react-three/drei/helpers/environment-assets"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
@@ -49,12 +50,14 @@ export type GLBType = {
 type Scene = {
   uuid: string
   name: string
+  preset: PresetsType
 }
 export type GameConfigStore = {
   scenes: Scene[]
   choices: Choice[]
   glbs: GLBType[]
   addScene: (scene: Scene) => void
+  updateScene: (scene: Scene) => void
   removeScene: (scene: string) => void
   addChoice: (choice: Choice) => void
   removeChoice: (choice: Choice) => void
@@ -71,6 +74,10 @@ export const useGameConfigStore = create(
       choices: [],
       glbs: [],
       addScene: (scene) => set((state) => ({ scenes: [...state.scenes, scene] })),
+      updateScene: (scene) =>
+        set((state) => ({
+          scenes: state.scenes.map((n) => (n.uuid === scene.uuid ? scene : n)),
+        })),
       removeScene: (sceneId) =>
         set((state) => ({
           scenes: state.scenes.filter((n) => n.uuid !== sceneId),
