@@ -1,7 +1,11 @@
+import { useGameConfigStore } from "@/lib/game-store"
 import { Choice, GLBType, useStore } from "@/lib/store"
 import { cn } from "@/lib/utils"
+import { useGLTF } from "@react-three/drei"
 import { useState } from "react"
 import { Object3D } from "three"
+
+const actions = ["idle", "walk", "run", "jump", "jumpIdle", "jumpLand", "fall"]
 
 function Option(props: { idx: number; selected?: boolean } & Choice) {
   const store = useStore()
@@ -15,7 +19,7 @@ function Option(props: { idx: number; selected?: boolean } & Choice) {
         },
       )}
     >
-      <label className="label  text-xs ">Option {props.idx}</label>
+      <label className="text-xs font-bold">Option {props.idx}</label>
       <input
         defaultValue={props.label}
         onChange={(e) => updateChoice({ label: e.target.value })}
@@ -23,7 +27,7 @@ function Option(props: { idx: number; selected?: boolean } & Choice) {
         className="input placeholder:text-gray-600 rounded-none input-bordered border-r  w-full input-xs"
       />
 
-      <label className="label  text-xs ">Req Money:</label>
+      <label className="text-xs font-bold">Req Money:</label>
       <input
         min={0}
         defaultValue={props.requiredMoney}
@@ -33,7 +37,7 @@ function Option(props: { idx: number; selected?: boolean } & Choice) {
         className="input placeholder:text-gray-600 rounded-none input-bordered border-r  w-full input-xs"
       />
 
-      <label className="label  text-xs ">Req Item:</label>
+      <label className="text-xs font-bold">Req Item:</label>
       <select
         onChange={(e) => {
           updateChoice({ requiredItem: e.target.value })
@@ -49,7 +53,7 @@ function Option(props: { idx: number; selected?: boolean } & Choice) {
         ))}
       </select>
 
-      <label className="label  text-xs ">Req Energy:</label>
+      <label className="text-xs font-bold">Req Energy:</label>
       <input
         min={0}
         max={100}
@@ -60,7 +64,7 @@ function Option(props: { idx: number; selected?: boolean } & Choice) {
         className="input placeholder:text-gray-600 rounded-none input-bordered border-r  w-full input-xs"
       />
 
-      <label className="label  text-xs ">Reward</label>
+      <label className="text-xs font-bold">Reward</label>
       <div className="grid grid-cols-2 gap-2">
         <select
           value={props.reward?.type}
@@ -103,73 +107,50 @@ function Option(props: { idx: number; selected?: boolean } & Choice) {
     </div>
   )
 }
-export function Settings() {
-  const store = useStore()
-  const uuid = store?.selectedGlb
-  const current = store.glbs.find((glb) => glb?.uuid === uuid)
+
+export function Settings(props: GLBType) {
+  const store = useGameConfigStore()
 
   const [selectedOption, setSelectedOption] = useState<string>()
 
   function createOption() {
     const uuid = new Object3D().uuid
     store.addChoice({
-      parent: current.uuid,
+      parent: props.uuid,
       uuid: uuid,
       label: "Option",
     })
     setSelectedOption(uuid)
   }
 
-  const updateGlb = (glb: Partial<GLBType>) => store.updateGlb({ ...current, ...glb })
-
+  const updateGlb = (glb: Partial<GLBType>) => store.updateGlb({ ...props, ...glb })
+  const { animations } = useGLTF(props.url)
+  console.log(animations)
   return (
-    <div className={cn("p-4 flex flex-col  gap-2  text-xs  ", {})}>
-      <div>Name:</div>
-      <input
-        type="text"
-        defaultValue={current?.name}
-        onChange={(e) => {
-          updateGlb({ name: e.target.value })
-        }}
-        placeholder="Type here"
-        className="input input-bordered input-xs w-full max-w-xs"
-      />
-      <div className="divider my-0 col-span-2" />
-      <label className="label text-xs ">Dialogue</label>
+    <div className={cn("px-4 flex flex-col  gap-2 mt-4", {})}>
+      <label className="text-xs font-bold">Type</label>
       <div className="flex flex-col   w-full  gap-2">
-        <textarea
-          onChange={(e) => {
-            updateGlb({ dialogue: { content: e.target.value } })
-          }}
-          defaultValue={current?.dialogue?.content}
-          className="textarea text-xs block rounded-none textarea-bordered w-full"
-        />
-        {store.choices
-          .filter((e) => e.parent === current?.uuid)
-          .map((obj, idx) => (
-            <div key={obj.uuid} onClick={() => setSelectedOption(obj?.uuid)}>
-              <Option {...obj} idx={idx} selected={obj.uuid === selectedOption} />
-            </div>
+        <select className="select outline-none focus:outline-none outline rounded-none select-bordered select-xs">
+          <option value="none">None</option>
+          {["npc", "misc", "hero"].map((k) => (
+            <option key={k} value={k}>
+              {k}
+            </option>
           ))}
-        <button
-          onClick={createOption}
-          className="btn rounded-none border-white border-opacity-15 btn-xs w-full btn-outline col-span-2 btn-square"
-        >
-          Add option
-        </button>
+        </select>
       </div>
       <div className="divider my-0 col-span-2" />
-      <label className="label  text-xs ">Shown time:</label>
+      <label className="text-xs font-bold">Shown time:</label>
       <div className="max-h-40 overflow-auto grid gap-2 grid-cols-2">
         {["morning", "noon", "afternoon", "evening", "night"].map((time) => (
           <div className="flex px-2 gap-2 w-full" key={time}>
             <input
-              checked={current?.shownTime[time as keyof GLBType["shownTime"]]}
+              checked={props?.shownTime[time as keyof GLBType["shownTime"]]}
               type="checkbox"
               onChange={(e) => {
                 updateGlb({
                   shownTime: {
-                    ...current?.shownTime,
+                    ...props?.shownTime,
                     [time]: e.target.checked,
                   },
                 })
@@ -183,14 +164,39 @@ export function Settings() {
           </div>
         ))}
       </div>
+      {animations.length && (
+        <>
+          <div className="divider my-0 col-span-2" />
+          <label className=" text-xs font-bold mb-2">Animations</label>
+          {actions.map((action) => (
+            <div key={action} className="grid grid-cols-3 gap-2">
+              <span className="text-xs">{action}</span>
+              <select
+                onChange={(e) => {
+                  updateGlb({ requiredItem: e.target.value })
+                }}
+                className="select rounded-none select-bordered w-full select-xs"
+              >
+                <option value={undefined}>None</option>
+                {animations.map((k) => (
+                  <option key={k.uuid} value={k.uuid}>
+                    {k.name}:
+                  </option>
+                ))}
+              </select>
+              <button className="btn btn-ghost btn-xs">Play</button>
+            </div>
+          ))}
+        </>
+      )}
       <div className="divider my-0 col-span-2" />
-      <label className="label  text-xs items-start ">Required item:</label>
+      <label className="text-xs font-bolditems-start ">Required item:</label>
       <div className="">
         <select
           onChange={(e) => {
             updateGlb({ requiredItem: e.target.value })
           }}
-          value={current?.requiredItem}
+          value={props?.requiredItem}
           className="select rounded-none select-bordered w-full select-xs"
         >
           <option value={undefined}>None</option>

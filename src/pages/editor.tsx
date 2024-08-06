@@ -1,11 +1,12 @@
 import { Controls } from "@/components/controls"
+import { Settings } from "@/components/settings"
 import { TreeFile, TreeFolder } from "@/components/tree"
 import { Model3d, use3dModels } from "@/hooks/use3dModels"
 import { GameConfigStore, useGameConfigStore } from "@/lib/game-store"
 import { Environment, GizmoHelper, GizmoViewport, OrbitControls, TransformControls } from "@react-three/drei"
 import { PresetsType } from "@react-three/drei/helpers/environment-assets"
 import { Canvas, useFrame, Vector3 } from "@react-three/fiber"
-import { ChangeEvent, DragEvent, FC, FormEvent, useEffect, useState } from "react"
+import { ChangeEvent, DragEvent, FC, FormEvent, Suspense, useEffect, useState } from "react"
 import * as THREE from "three"
 import { Glb } from "../components/glb"
 import { cn, debounce } from "../lib/utils"
@@ -327,7 +328,7 @@ export const Editor: FC = () => {
     <div key={selectedScene} className="w-screen  h-screen flex">
       <div className="h-full  flex flex-col border-r border-white border-opacity-10 min-w-64 w-64">
         <div className="flex border border-base-content border-b border-opacity-10 px-4 py-2 text-lg font-bold items-end">
-          <img src="/logo-op.png" alt="logo" className="w-8" />
+          <img src="/logo.png" alt="logo" className="w-8" />
 
           <div className="text-lg w-full">verse</div>
         </div>
@@ -520,7 +521,7 @@ export const Editor: FC = () => {
       >
         <div className="gap-4 items-center justify-between p-4 border-b border-white border-opacity-10">
           <div className="flex items-center justify-between">
-            <div className="text-xs   font-bold">{currentGlb?.name}</div>
+            <div className="text-xs font-bold">{currentGlb?.name}</div>
             <button
               onClick={() => {
                 setSelected3dModel(null)
@@ -531,6 +532,7 @@ export const Editor: FC = () => {
             </button>
           </div>
         </div>
+        <Suspense>{currentGlb && <Settings {...currentGlb} />}</Suspense>
       </div>
     </div>
   )

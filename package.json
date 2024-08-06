@@ -31,6 +31,7 @@
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.166.1",
     "use-sound": "^4.0.3",
+    "vite-plugin-pwa": "^0.20.1",
     "windups": "^1.2.2",
     "zustand": "^4.5.4"
   },

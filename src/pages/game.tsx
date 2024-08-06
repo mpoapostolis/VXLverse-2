@@ -2,13 +2,11 @@ import { Environment, KeyboardControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import { CuboidCollider, Physics } from "@react-three/rapier"
 import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
-import { animationSet, characterURL, Hero, keyboardMap } from "../components/hero"
-import Lights from "../components/lights"
-
-import { useState } from "react"
-import { useParams } from "react-router-dom"
+import { useEffect, useRef, useState } from "react"
 import { Dialogue } from "../components/dialogue"
 import { Glb } from "../components/glb"
+import { animationSet, characterURL, Hero, keyboardMap } from "../components/hero"
+import Lights from "../components/lights"
 import { allScenes, Scene } from "../components/scene"
 import { SceneText } from "../components/sceneText"
 import { useStore } from "../lib/store"
@@ -16,8 +14,7 @@ import { cn } from "../lib/utils"
 
 export const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 export function Game() {
-  const { id } = useParams()
-  console.log(id)
+  const [intro, setIntroFinished] = useState(false)
   const store = useStore()
   const [died, setDied] = useState(0)
   const time = store.time % 4
@@ -27,24 +24,42 @@ export function Game() {
   if (time === 3) timeSrc = "afternoon"
   if (time === 0) timeSrc = "night"
 
-  return (
+  useEffect(() => {
+    ref?.current?.play()
+  }, [])
+
+  const ref = useRef<HTMLVideoElement>(null)
+  return !intro ? (
+    <iframe src="https://cross-origin.com/myvideo.html" allow="autoplay; fullscreen">
+      <video
+        ref={ref}
+        id="introVideo"
+        autoPlay
+        className="w-screen h-screen object-cover"
+        onEnded={() => {
+          setIntroFinished(true)
+        }}
+      >
+        <source src="/intro.webm" type="video/mp4" />
+      </video>
+    </iframe>
+  ) : (
     <div className="w-screen h-screen">
       <SceneText />
       <Dialogue />
 
-      <div className="fixed z-40 w-full top-0 flex  gap-4">
-        <div className="w-48  mr-auto grid gap-8  p-2 bg-opacity-50 bg-base-100 grid-cols-3">
+      <div className="fixed z-40 w-full top-0 flex gap-4">
+        <div className="w-48 mr-auto grid gap-8 p-2 bg-opacity-50 bg-base-100 grid-cols-3">
           <div className="flex w-full items-center justify-center flex-col gap-2">
-            <img className=" w-6 h-6 top-0 right-0" src="/money.png" alt="clock" />
+            <img className="w-6 h-6 top-0 right-0" src="/money.png" alt="clock" />
             <span className="text-white text-xs">x{store.money}</span>
           </div>
           <div className="flex w-full items-center justify-center flex-col gap-2">
-            <img className=" w-6 h-6 top-0 right-0" src={`/energy.png`} alt="clock" />
-
+            <img className="w-6 h-6 top-0 right-0" src={`/energy.png`} alt="clock" />
             <span className="text-white text-xs">x{store.energy}</span>
           </div>
           <div className="flex w-full items-center justify-center flex-col gap-2 mr-auto">
-            <img className=" w-6 h-6 top-0 right-0" src={`/${timeSrc}.png`} alt="clock" />
+            <img className="w-6 h-6 top-0 right-0" src={`/${timeSrc}.png`} alt="clock" />
             <span className="text-white text-xs">
               {time === 1 && "Morning"}
               {time === 2 && "Noon"}
@@ -78,14 +93,14 @@ export function Game() {
       {isMobile && (!store.dialog || store.sceneText) ? (
         <EcctrlJoystick buttonPositionRight={30} buttonPositionBottom={20} />
       ) : (
-        <div className="fixed hidden md:block z-40 bottom-4  select-none pointer-events-none left-4">
+        <div className="fixed hidden md:block z-40 bottom-4 select-none pointer-events-none left-4">
           <img className="w-44" src="/keyControls.png" alt="control keys" />
         </div>
       )}
       <Canvas
         key={store.scene + died}
         shadows
-        className={cn("w-full  h-full", {
+        className={cn("w-full h-full", {
           blur: store.dialog?.content,
         })}
       >

@@ -1,0 +1,45 @@
+{
+  "name": "VXLverse - Empower Your Creativity: Create and Play Story games with VXLverse",
+  "short_name": "VXLverse",
+  "description": "Imagine you're playing with your favorite toy set, placing characters around, and creating fun stories with them. That's exactly what VXLverse does, but in a digital world.",
+  "start_url": "/",
+  
+  "icons": [
+      {
+        "src": "/android-chrome-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/android-chrome-384x384.png",
+        "sizes": "384x384",
+        "type": "image/png"
+      },
+      {
+        "src": "/mstile-150x150.png",
+        "sizes": "150x150",
+        "type": "image/png"
+      },
+      {
+        "src": "/apple-touch-icon.png",
+        "sizes": "180x180",
+        "type": "image/png"
+      },
+      {
+        "src": "/favicon-32x32.png",
+        "sizes": "32x32",
+        "type": "image/png"
+      },
+      {
+        "src": "/favicon-16x16.png",
+        "sizes": "16x16",
+        "type": "image/png"
+      }
+  ],
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "display":"standalone",
+  "scope": "/",
+  "viewport": "width=device-width, initial-scale=1.0",
+  "orientation": "portrait"
+}
