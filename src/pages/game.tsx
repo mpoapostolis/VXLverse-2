@@ -14,7 +14,7 @@ import { cn } from "../lib/utils"
 
 export const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 export function Game() {
-  const [intro, setIntroFinished] = useState(false)
+  const [state, setState] = useState<"intro" | "game" | "clickToPlay">("intro")
   const store = useStore()
   const [died, setDied] = useState(0)
   const time = store.time % 4
@@ -25,24 +25,38 @@ export function Game() {
   if (time === 0) timeSrc = "night"
 
   useEffect(() => {
-    ref?.current?.play()
+    ref?.current?.play().catch(() => {
+      setState("clickToPlay")
+    })
   }, [])
 
   const ref = useRef<HTMLVideoElement>(null)
-  return !intro ? (
-    <iframe src="https://cross-origin.com/myvideo.html" allow="autoplay; fullscreen">
-      <video
-        ref={ref}
-        id="introVideo"
-        autoPlay
-        className="w-screen h-screen object-cover"
-        onEnded={() => {
-          setIntroFinished(true)
+
+  return state === "clickToPlay" ? (
+    <div className="grid place-content-center w-screen h-screen">
+      <button
+        onClick={() => {
+          ref?.current?.play()
+          setState("intro")
         }}
+        className="btn-warning btn px-4 py-2 rounded"
       >
-        <source src="/intro.webm" type="video/mp4" />
-      </video>
-    </iframe>
+        Click to play
+      </button>
+    </div>
+  ) : state === "intro" ? (
+    <video
+      ref={ref}
+      id="introVideo"
+      autoPlay
+      className="w-screen h-screen object-cover"
+      onEnded={() => {
+        setState("game")
+      }}
+    >
+      <source src="/intro.webm" type="video/mp4" />
+      <source src="/intro.mp4" type="video/mp4" />
+    </video>
   ) : (
     <div className="w-screen h-screen">
       <SceneText />
