@@ -123,7 +123,7 @@ export function Settings() {
   const updateGlb = (glb: Partial<GLBType>) => store.updateGlb({ ...current, ...glb })
 
   return (
-    <div className={cn("p-4 flex flex-col  gap-2  text-xs items-start ", {})}>
+    <div className={cn("p-4 flex flex-col  gap-2  text-xs  ", {})}>
       <div>Name:</div>
       <input
         type="text"

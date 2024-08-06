@@ -19,10 +19,6 @@ export type Choice = {
 type Dialogue = {
   content: string
   divider?: string
-  choices?: {
-    label: string
-    onSelect: () => void
-  }[]
 }
 
 export type GLBType = {
@@ -36,6 +32,7 @@ export type GLBType = {
   scene: string
   type: "npc" | "misc" | "triggerPoint"
   collectable?: boolean
+  thumbnail?: string
   requiredItem?: string
   shownTime?: {
     morning: boolean
