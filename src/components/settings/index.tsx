@@ -162,7 +162,7 @@ export function Settings(props: GLBType) {
           </div>
         ))}
       </div>
-      {animations.length && (
+      {animations.length > 0 && (
         <>
           <div className="divider my-0 col-span-2" />
           <label className=" text-xs font-bold mb-2">Animations</label>

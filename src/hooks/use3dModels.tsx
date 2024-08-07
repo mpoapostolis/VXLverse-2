@@ -13,6 +13,8 @@ export interface Model3d {
   obj: string
   glb: string
   thumbnail: string
+  attribution_owner: string
+  attribution_url: string
 }
 
 export function use3dModels(page: number, category: string, searchTerm?: string) {
