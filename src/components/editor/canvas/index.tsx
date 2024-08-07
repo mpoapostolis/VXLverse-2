@@ -21,17 +21,18 @@ export function EditorCanvas() {
   } = useEditor()
 
   const currentScene = store.scenes.find((scene) => scene.uuid === selectedScene)
-
   return (
     <Canvas key={keyForCanvas} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} shadows>
       <Camera />
       <gridHelper args={[1000, 1000]} />
 
-      <Html position={[position[0], position[1] + 1, position[2]]}>
-        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-          <div className="bg-black rounded-full text-2xl p-1">👇</div>
-        </div>
-      </Html>
+      {position?.length && (
+        <Html position={[position?.at(0), position?.at(1) + 1, position?.at(2)]}>
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+            <div className="bg-black rounded-full text-2xl p-1">👇</div>
+          </div>
+        </Html>
+      )}
 
       <Environment background preset={currentScene?.preset ?? "night"} />
       <ambientLight />

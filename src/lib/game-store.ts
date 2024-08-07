@@ -62,6 +62,8 @@ export type GameConfigStore = {
   addGlb: (glb: GLBType) => void
   removeGlb: (glb: GLBType) => void
   updateGlb: (glb: GLBType) => void
+  fly: boolean
+  setFly: (fly: boolean) => void
 }
 
 export const useGameConfigStore = create(
@@ -70,6 +72,8 @@ export const useGameConfigStore = create(
       scenes: [],
       choices: [],
       glbs: [],
+      fly: false,
+      setFly: (fly) => set({ fly }),
       addScene: (scene) => set((state) => ({ scenes: [...state.scenes, scene] })),
       updateScene: (scene) =>
         set((state) => ({

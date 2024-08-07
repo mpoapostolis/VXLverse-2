@@ -132,7 +132,6 @@ export const useStore = create(
             return {
               money: +state.money,
             }
-          console.log("adding money", amount, state.money)
           return { money: +state.money + amount }
         }),
 

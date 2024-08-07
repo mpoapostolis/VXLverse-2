@@ -5,7 +5,7 @@ import { useEffect } from "react"
 import { useEditor } from "../provider"
 
 export function Controls() {
-  const { mode, setMode, selected3dModel } = useEditor()
+  const { mode, setMode, selected3dModel, setFlying } = useEditor()
   const store = useGameConfigStore()
   const currentGlb = store.glbs.find((e) => e.uuid === selected3dModel)
   useEffect(() => {
@@ -77,7 +77,11 @@ export function Controls() {
         <div className="my-2" />
 
         <button
-          aria-label="Scale"
+          onClick={(e) => {
+            e.stopPropagation()
+            setFlying(true)
+          }}
+          aria-label="Fly"
           className={clsx(" border-b border-opacity-30 bg-base-content fill-card-foreground border-black p-2", {})}
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" color="#000">

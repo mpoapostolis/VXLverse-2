@@ -9,7 +9,7 @@ import { useEditor } from "../provider"
 export function SceneList() {
   const store = useGameConfigStore()
   const scenes = store.scenes
-  const { selectedScene, selected3dModel, setSelectedScene, setSelected3dModel } = useEditor()
+  const { selectedScene, selected3dModel, setSelectedScene, setSelected3dModel, setPosition } = useEditor()
   return (
     <ul>
       {scenes.map((scene) => (
@@ -54,6 +54,7 @@ export function SceneList() {
                     onClick={(e) => {
                       e.stopPropagation()
                       setSelected3dModel(glb?.uuid)
+                      setPosition(glb.position)
                       setSelectedScene(scene.uuid)
                     }}
                   >
@@ -87,8 +88,15 @@ export function SceneList() {
 
 export function SceneTree() {
   const store = useGameConfigStore()
-  const { selectedScene, selected3dModel, setSelected3dModel, setSelectedScene, newSceneName, setNewSceneName } =
-    useEditor()
+  const {
+    selectedScene,
+    setPosition,
+    selected3dModel,
+    setSelected3dModel,
+    setSelectedScene,
+    newSceneName,
+    setNewSceneName,
+  } = useEditor()
   const hero = store.glbs.find((glb) => glb.type === "hero")
   const currentScene = store.scenes.find((scene) => scene.uuid === selectedScene)
 
@@ -113,6 +121,7 @@ export function SceneTree() {
                   onClick={() => {
                     setSelectedScene(hero.scene)
                     setSelected3dModel(hero.uuid)
+                    setPosition(hero.position)
                   }}
                   selected={hero.uuid === selected3dModel}
                 >
