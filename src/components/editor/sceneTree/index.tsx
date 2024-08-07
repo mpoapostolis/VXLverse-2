@@ -64,7 +64,8 @@ export function SceneList() {
                       className="input mr-auto !p-0  !m-0  border-0 border-white truncate max-w-20 px-0 bg-transparent outline-none focus:outline-none  input-xs rounded-none"
                     />
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation()
                         store.removeGlb(glb)
                         setSelected3dModel(undefined)
                       }}

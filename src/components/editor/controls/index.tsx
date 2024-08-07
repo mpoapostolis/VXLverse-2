@@ -1,10 +1,42 @@
+import { useGameConfigStore } from "@/lib/game-store"
+import { cn } from "@/lib/utils"
 import clsx from "clsx"
+import { useEffect } from "react"
 import { useEditor } from "../provider"
 
 export function Controls() {
-  const { mode, setMode } = useEditor()
+  const { mode, setMode, selected3dModel } = useEditor()
+  const store = useGameConfigStore()
+  const currentGlb = store.glbs.find((e) => e.uuid === selected3dModel)
+  useEffect(() => {
+    // handle key events
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === "w") {
+        setMode("translate")
+      }
+      if (e.key.toLowerCase() === "e") {
+        setMode("rotate")
+      }
+      if (e.key.toLowerCase() === "r") {
+        setMode("scale")
+      }
+      // check if shift and d is pressed
+      if (e.shiftKey && e.key.toLowerCase() === "d") {
+        store.removeGlb(currentGlb)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [currentGlb])
+
   return (
-    <div className="absolute left-3 top-3  z-10 grid h-fit w-fit">
+    <div
+      className={cn("absolute left-3 top-3  z-10 grid h-fit w-fit", {
+        hidden: !selected3dModel,
+      })}
+    >
       <div className="grid h-fit w-fit">
         <button
           aria-label="translate"
