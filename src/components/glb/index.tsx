@@ -4,7 +4,7 @@ Command: npx gltfjsx@6.2.16 -t ghost.glb
 */
 
 import { GLBType, useStore } from "@/lib/store"
-import { Box, useAnimations, useGLTF } from "@react-three/drei"
+import { useAnimations, useGLTF } from "@react-three/drei"
 import { RigidBody } from "@react-three/rapier"
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
@@ -90,17 +90,9 @@ export function Glb(
   }
 
   return (
-    <>
-      {props.type === "triggerPoint" ? (
-        <Box onClick={onClick} args={[1, 1, 1]} {...commonProps}>
-          <meshBasicMaterial opacity={0.5} color={"black"} transparent />
-        </Box>
-      ) : (
-        <group onClick={onClick} uuid={props.uuid} ref={group} {...commonProps} dispose={null}>
-          <primitive object={scene} dispose={null} />
-        </group>
-      )}
-    </>
+    <group onClick={onClick} uuid={props.uuid} ref={group} {...commonProps} dispose={null}>
+      <primitive object={scene} dispose={null} />
+    </group>
   )
 }
 

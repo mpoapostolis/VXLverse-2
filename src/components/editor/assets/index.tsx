@@ -45,6 +45,7 @@ export function Assets() {
               <ul>
                 {categories.map((cat) => (
                   <TreeFile
+                    key={cat}
                     onClick={() => {
                       setAssetCategory("Library")
                       setPage(0)

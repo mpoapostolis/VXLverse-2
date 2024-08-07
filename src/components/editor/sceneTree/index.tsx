@@ -87,8 +87,9 @@ export function SceneList() {
 
 export function SceneTree() {
   const store = useGameConfigStore()
-  const { selectedScene, setSelectedScene, newSceneName, setNewSceneName } = useEditor()
-
+  const { selectedScene, selected3dModel, setSelected3dModel, setSelectedScene, newSceneName, setNewSceneName } =
+    useEditor()
+  const hero = store.glbs.find((glb) => glb.type === "hero")
   const currentScene = store.scenes.find((scene) => scene.uuid === selectedScene)
 
   return (
@@ -107,6 +108,17 @@ export function SceneTree() {
             <li>
               <TreeFolder selected>Scenes</TreeFolder>
               <SceneList />
+              {hero?.uuid && (
+                <TreeFile
+                  onClick={() => {
+                    setSelectedScene(hero.scene)
+                    setSelected3dModel(hero.uuid)
+                  }}
+                  selected={hero.uuid === selected3dModel}
+                >
+                  Hero
+                </TreeFile>
+              )}
             </li>
           </ul>
         </li>

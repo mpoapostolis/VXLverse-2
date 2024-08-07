@@ -27,12 +27,9 @@ export function EditorCanvas() {
       <Camera />
       <gridHelper args={[1000, 1000]} />
 
-      <Html
-        position={[position[0], position[1] + 1, position[2]]}
-        style={{ width: "100%", height: "100%", pointerEvents: "none" }}
-      >
+      <Html position={[position[0], position[1] + 1, position[2]]}>
         <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-          <div className="badge badge-warning">asda</div>
+          <div className="bg-black rounded-full text-2xl p-1">👇</div>
         </div>
       </Html>
 

@@ -30,7 +30,7 @@ export type GLBType = {
   rotation: [number, number, number]
   scale: [number, number, number]
   scene: string
-  type: "npc" | "misc" | "triggerPoint"
+  type: "hero" | "npc" | "misc"
   collectable?: boolean
   thumbnail?: string
   requiredItem?: string

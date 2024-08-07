@@ -10,7 +10,7 @@ import { cn } from "../lib/utils"
 
 function Edit() {
   const store = useGameConfigStore()
-  const { selectedScene, selected3dModel, setSelected3dModel } = useEditor()
+  const { selectedScene, selected3dModel } = useEditor()
 
   const currentScene = store.scenes.find((scene) => scene.uuid === selectedScene)
   const currentGlb = store.glbs.find((glb) => glb.uuid === selected3dModel)
@@ -37,20 +37,7 @@ function Edit() {
           block: selected3dModel,
         })}
       >
-        <div className="gap-4 items-center justify-between p-4 border-b border-white border-opacity-10">
-          <div className="flex items-center justify-between">
-            <div className="text-xs font-bold">{currentGlb?.name}</div>
-            <button
-              onClick={() => {
-                setSelected3dModel(null)
-              }}
-              className="btn btn-xs w-fit btn-error btn-outline rounded-none"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-        <Suspense>{currentGlb && <Settings {...currentGlb} />}</Suspense>
+        <Suspense>{currentGlb && <Settings />}</Suspense>
       </div>
     </div>
   )

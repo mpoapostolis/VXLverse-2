@@ -2,6 +2,7 @@ import { useGameConfigStore } from "@/lib/game-store"
 import { GLBType } from "@/lib/store"
 import { cn } from "@/lib/utils"
 import { useGLTF } from "@react-three/drei"
+import { useEditor } from "../provider"
 
 const actions = ["idle", "walk", "run", "jump", "jumpIdle", "jumpLand", "fall"]
 
@@ -106,35 +107,44 @@ const actions = ["idle", "walk", "run", "jump", "jumpIdle", "jumpLand", "fall"]
 //   )
 // }
 
-export function Settings(props: GLBType) {
+export function Settings() {
   const store = useGameConfigStore()
+  const { selected3dModel } = useEditor()
+  const currentGlb = store.glbs.find((k) => k.uuid === selected3dModel)
 
-  // const [selectedOption, setSelectedOption] = useState<string>()
+  const updateGlb = (glb: Partial<GLBType>) => store.updateGlb({ ...currentGlb, ...glb })
+  const { animations } = useGLTF(currentGlb.url)
+  const hero = store.glbs.find((k) => k.type === "hero")
 
-  // function createOption() {
-  //   const uuid = new Object3D().uuid
-  //   store.addChoice({
-  //     parent: props.uuid,
-  //     uuid: uuid,
-  //     label: "Option",
-  //   })
-  //   setSelectedOption(uuid)
-  // }
-
-  const updateGlb = (glb: Partial<GLBType>) => store.updateGlb({ ...props, ...glb })
-  const { animations } = useGLTF(props.url)
-  console.log(animations)
   return (
     <div className={cn("px-4 flex flex-col  gap-2 mt-4", {})}>
+      {(currentGlb?.type === "hero" || (animations?.length > 2 && !hero?.uuid)) && (
+        <>
+          <div className="flex items-center gap-4">
+            <label className="text-xs font-bold">Hero:</label>
+            <input
+              checked={currentGlb?.type === "hero"}
+              onChange={(e) => {
+                const checked = e.target.checked
+                updateGlb({ type: checked ? "hero" : "npc" })
+              }}
+              type="checkbox"
+              className="toggle ml-auto toggle-warning toggle-sm"
+              defaultChecked
+            />
+          </div>
+          <div className="divider my-0 col-span-2" />
+        </>
+      )}
       <label className="text-xs font-bold">Type</label>
       <div className="flex flex-col   w-full  gap-2">
-        <select className="select outline-none focus:outline-none outline rounded-none select-bordered select-xs">
-          <option value="none">None</option>
-          {["npc", "misc", "hero"].map((k) => (
-            <option key={k} value={k}>
-              {k}
-            </option>
-          ))}
+        <select
+          defaultValue={currentGlb?.type || "npc"}
+          onChange={(e) => updateGlb({ type: e.target.value as "npc" | "misc" | "hero" })}
+          className="select outline-none focus:outline-none outline rounded-none select-bordered select-xs"
+        >
+          <option value="npc">npc</option>
+          <option value="misc">misc</option>
         </select>
       </div>
       <div className="divider my-0 col-span-2" />
@@ -143,12 +153,12 @@ export function Settings(props: GLBType) {
         {["morning", "noon", "afternoon", "evening", "night"].map((time) => (
           <div className="flex px-2 gap-2 w-full" key={time}>
             <input
-              checked={props?.shownTime[time as keyof GLBType["shownTime"]]}
+              checked={currentGlb?.shownTime[time as keyof GLBType["shownTime"]]}
               type="checkbox"
               onChange={(e) => {
                 updateGlb({
                   shownTime: {
-                    ...props?.shownTime,
+                    ...currentGlb?.shownTime,
                     [time]: e.target.checked,
                   },
                 })
@@ -162,6 +172,17 @@ export function Settings(props: GLBType) {
           </div>
         ))}
       </div>
+      <div className="divider my-0 col-span-2" />
+      <label className=" text-xs  mb-2">Scale: {currentGlb?.scale[0] ?? 1}</label>
+      <input
+        type="range"
+        value={currentGlb?.scale[0]}
+        min={0}
+        max={20}
+        step={0.1}
+        onChange={(e) => updateGlb({ scale: [+e.target.value, +e.target.value, +e.target.value] })}
+        className="range range-xs w-full"
+      />
       {animations.length > 0 && (
         <>
           <div className="divider my-0 col-span-2" />
@@ -194,7 +215,7 @@ export function Settings(props: GLBType) {
           onChange={(e) => {
             updateGlb({ requiredItem: e.target.value })
           }}
-          value={props?.requiredItem}
+          value={currentGlb?.requiredItem}
           className="select rounded-none select-bordered w-full select-xs"
         >
           <option value={undefined}>None</option>
