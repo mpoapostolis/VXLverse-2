@@ -1,14 +1,8 @@
 import clsx from "clsx"
+import { useEditor } from "../provider"
 
-export function Controls({
-  mode,
-  setMode,
-  setPos,
-}: {
-  setMode: (mode: "translate" | "rotate" | "scale") => void
-  mode: "translate" | "rotate" | "scale"
-  setPos: () => void
-}) {
+export function Controls() {
+  const { mode, setMode } = useEditor()
   return (
     <div className="absolute left-3 top-3  z-10 grid h-fit w-fit">
       <div className="grid h-fit w-fit">
@@ -52,7 +46,6 @@ export function Controls({
 
         <button
           aria-label="Scale"
-          onClick={() => setPos()}
           className={clsx(" border-b border-opacity-30 bg-base-content fill-card-foreground border-black p-2", {})}
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" color="#000">

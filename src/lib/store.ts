@@ -1,6 +1,5 @@
 "use client"
 
-import { TransformMode } from "@/pages/editor"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
@@ -74,8 +73,6 @@ export type Store = {
   addChoice: (choice: Choice) => void
   removeChoice: (choice: Choice) => void
   updateChoice: (choice: Choice) => void
-  transformMode: TransformMode
-  setTransformMode: (mode: TransformMode) => void
   addMoney: (amount: number) => void
   removeMoney: (amount: number) => void
   selectedGlb?: string
@@ -129,7 +126,6 @@ export const useStore = create(
       transformMode: "translate",
       settingsExpanded: false,
       setSettingsExpanded: (expanded) => set({ settingsExpanded: expanded }),
-      setTransformMode: (transformMode) => set({ transformMode }),
       addMoney: (amount) =>
         set((state) => {
           if (!amount)

@@ -1,6 +1,5 @@
 "use client"
 
-import { TransformMode } from "@/pages/editor"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
@@ -23,13 +22,11 @@ export type PlayerStore = {
   inventory: Inventory
   selectedGlb?: string
   settingsExpanded: boolean
-  transformMode: TransformMode
   dialog?: Dialogue
   sceneText?: string
   addEnergy: (amount: number) => void
   removeEnergy: (amount: number) => void
   setTime: (time: number) => void
-  setTransformMode: (mode: TransformMode) => void
   addMoney: (amount: number) => void
   removeMoney: (amount: number) => void
   setSettingsExpanded: (expanded: boolean) => void
@@ -53,7 +50,6 @@ export const usePlayerStore = create(
       addEnergy: (amount) => set((state) => ({ energy: state.energy + amount })),
       removeEnergy: (amount) => set((state) => ({ energy: state.energy - amount })),
       setTime: (time) => set({ time }),
-      setTransformMode: (transformMode) => set({ transformMode }),
       addMoney: (amount) => set((state) => ({ money: state.money + amount })),
       removeMoney: (amount) => set((state) => ({ money: state.money - amount })),
       setSettingsExpanded: (expanded) => set({ settingsExpanded: expanded }),
