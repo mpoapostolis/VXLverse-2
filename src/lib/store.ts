@@ -42,6 +42,9 @@ export type GLBType = {
   scene: string
   type: "hero" | "npc" | "misc"
   collectable?: boolean
+  thumbnail?: string
+  animationSet: Record<string, string>
+  currentAnimation?: string
   requiredItem?: string
   shownTime?: {
     morning: boolean
@@ -52,6 +55,7 @@ export type GLBType = {
   }
   dialogue?: Dialogue
 }
+
 export type SceneConfig = Record<string, number>
 
 export type Store = {

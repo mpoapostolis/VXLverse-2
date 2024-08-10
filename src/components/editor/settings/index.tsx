@@ -1,11 +1,10 @@
-import { useGameConfigStore } from "@/lib/game-store"
-import { GLBType } from "@/lib/store"
+import { GLBType, useGameConfigStore } from "@/lib/game-store"
 import { cn } from "@/lib/utils"
 import { useGLTF } from "@react-three/drei"
 import { useEditor } from "../provider"
 
-const actions = ["idle", "walk", "run", "jump", "jumpIdle", "jumpLand", "fall"]
-
+const heroActions = ["idle", "walk", "run", "action1"]
+const npcActions = ["idle", "onInteract"]
 // function Option(props: { idx: number; selected?: boolean } & Choice) {
 //   const store = useStore()
 //   const updateChoice = (choice: Partial<Choice>) => store.updateChoice({ ...props, ...choice })
@@ -115,7 +114,7 @@ export function Settings() {
   const updateGlb = (glb: Partial<GLBType>) => store.updateGlb({ ...currentGlb, ...glb })
   const { animations } = useGLTF(currentGlb.url)
   const hero = store.glbs.find((k) => k.type === "hero")
-
+  const animationSet = currentGlb.type === "hero" ? heroActions : npcActions
   return (
     <div className={cn("px-4 flex flex-col  gap-2 mt-4", {})}>
       {(currentGlb?.type === "hero" || (animations?.length > 2 && !hero?.uuid)) && (
@@ -187,23 +186,39 @@ export function Settings() {
         <>
           <div className="divider my-0 col-span-2" />
           <label className=" text-xs font-bold mb-2">Animations</label>
-          {actions.map((action) => (
+          {animationSet.map((action) => (
             <div key={action} className="grid grid-cols-3 gap-2">
               <span className="text-xs">{action}</span>
               <select
+                value={currentGlb?.animationSet?.[action]}
                 onChange={(e) => {
-                  updateGlb({ requiredItem: e.target.value })
+                  const animation = currentGlb?.animationSet ?? {}
+                  updateGlb({
+                    animationSet: {
+                      ...animation,
+                      [action]: e.target.value,
+                    },
+                  })
                 }}
                 className="select rounded-none select-bordered w-full select-xs"
               >
                 <option value={undefined}>None</option>
                 {animations.map((k) => (
-                  <option key={k.uuid} value={k.uuid}>
+                  <option key={k.uuid} value={k.name}>
                     {k.name}:
                   </option>
                 ))}
               </select>
-              <button className="btn btn-ghost btn-xs">Play</button>
+              <button
+                onClick={() => {
+                  store.updateGlb({ ...currentGlb, currentAnimation: currentGlb?.animationSet?.[action] })
+                }}
+                className={cn("btn btn-outline rounded-none border-opacity-10 border-white btn-xs", {
+                  "btn-warning": currentGlb?.currentAnimation === currentGlb?.animationSet?.[action],
+                })}
+              >
+                {currentGlb?.currentAnimation === currentGlb?.animationSet?.[action] ? "Stop" : "Play"}
+              </button>
             </div>
           ))}
         </>

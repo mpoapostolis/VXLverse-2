@@ -33,6 +33,8 @@ export type GLBType = {
   type: "hero" | "npc" | "misc"
   collectable?: boolean
   thumbnail?: string
+  animationSet: Record<string, string>
+  currentAnimation?: string
   requiredItem?: string
   shownTime?: {
     morning: boolean

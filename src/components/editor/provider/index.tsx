@@ -87,6 +87,8 @@ export const EditorProvider: FC<{ children: React.ReactNode }> = ({ children }) 
       name: parsedData?.name,
       glbName: parsedData?.name,
       position: position ?? [0, 0, 0],
+      animationSet: {},
+
       shownTime: {
         morning: true,
         afternoon: true,
