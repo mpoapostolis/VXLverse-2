@@ -211,36 +211,27 @@ export function Settings() {
               </select>
               <button
                 onClick={() => {
-                  store.updateGlb({ ...currentGlb, currentAnimation: currentGlb?.animationSet?.[action] })
+                  const currentGlbAnimation = currentGlb?.currentAnimation
+
+                  const currentAnimation =
+                    currentGlbAnimation === currentGlb?.animationSet?.[action]
+                      ? undefined
+                      : currentGlb?.animationSet?.[action]
+                  store.updateGlb({ ...currentGlb, currentAnimation })
                 }}
                 className={cn("btn btn-outline rounded-none border-opacity-10 border-white btn-xs", {
                   "btn-warning": currentGlb?.currentAnimation === currentGlb?.animationSet?.[action],
                 })}
               >
-                {currentGlb?.currentAnimation === currentGlb?.animationSet?.[action] ? "Stop" : "Play"}
+                {currentGlb?.animationSet?.[action] &&
+                currentGlb?.currentAnimation === currentGlb?.animationSet?.[action]
+                  ? "Stop"
+                  : "Play"}
               </button>
             </div>
           ))}
         </>
       )}
-      <div className="divider my-0 col-span-2" />
-      <label className="text-xs font-bolditems-start ">Required item:</label>
-      <div className="">
-        <select
-          onChange={(e) => {
-            updateGlb({ requiredItem: e.target.value })
-          }}
-          value={currentGlb?.requiredItem}
-          className="select rounded-none select-bordered w-full select-xs"
-        >
-          <option value={undefined}>None</option>
-          {store.glbs.map((k) => (
-            <option key={k.uuid} value={k.uuid}>
-              {k.name}
-            </option>
-          ))}
-        </select>
-      </div>
     </div>
   )
 }
