@@ -1,110 +1,126 @@
-import { GLBType, useGameConfigStore } from "@/lib/game-store"
+import { Choice, GLBType, useGameConfigStore } from "@/lib/game-store"
 import { cn } from "@/lib/utils"
 import { useGLTF } from "@react-three/drei"
+import * as THREE from "three"
 import { useEditor } from "../provider"
-
-const heroActions = ["idle", "walk", "run", "action1"]
+const heroActions = ["idle", "walk", "run", "jump", "action1"]
 const npcActions = ["idle", "onInteract"]
-// function Option(props: { idx: number; selected?: boolean } & Choice) {
-//   const store = useStore()
-//   const updateChoice = (choice: Partial<Choice>) => store.updateChoice({ ...props, ...choice })
-//   return (
-//     <div
-//       className={cn(
-//         " grid grid-cols-[90px_1fr] transition duration-1000 h-full  border-white border-opacity-10 border p-2 bg-base-100",
-//         {
-//           "h-10 overflow-hidden ": !props.selected,
-//         },
-//       )}
-//     >
-//       <label className="text-xs font-bold">Option {props.idx}</label>
-//       <input
-//         defaultValue={props.label}
-//         onChange={(e) => updateChoice({ label: e.target.value })}
-//         placeholder="option"
-//         className="input placeholder:text-gray-600 rounded-none input-bordered border-r  w-full input-xs"
-//       />
 
-//       <label className="text-xs font-bold">Req Money:</label>
-//       <input
-//         min={0}
-//         defaultValue={props.requiredMoney}
-//         onChange={(e) => updateChoice({ requiredMoney: parseInt(e.target.value) })}
-//         placeholder="80$"
-//         type="number"
-//         className="input placeholder:text-gray-600 rounded-none input-bordered border-r  w-full input-xs"
-//       />
+function Option(props: Choice) {
+  const store = useGameConfigStore()
+  const { currentGlb: currentGlb } = useEditor()
+  const choices = (currentGlb?.dialogue?.choices as Choice[]) ?? ([] as Choice[])
 
-//       <label className="text-xs font-bold">Req Item:</label>
-//       <select
-//         onChange={(e) => {
-//           updateChoice({ requiredItem: e.target.value })
-//         }}
-//         value={props?.requiredItem}
-//         className="select rounded-none select-bordered w-full select-xs"
-//       >
-//         <option value={undefined}>None</option>
-//         {store.glbs.map((k) => (
-//           <option key={k.uuid} value={k.uuid}>
-//             {k.name}
-//           </option>
-//         ))}
-//       </select>
+  const updateChoice = (choice: Partial<Choice>) =>
+    store.updateGlb({
+      ...currentGlb,
+      dialogue: {
+        ...currentGlb?.dialogue,
+        choices: choices.map((k) => (k.uuid === props.uuid ? { ...k, ...choice } : k)),
+      },
+    })
 
-//       <label className="text-xs font-bold">Req Energy:</label>
-//       <input
-//         min={0}
-//         max={100}
-//         defaultValue={props.requiredEnergy}
-//         onChange={(e) => updateChoice({ requiredEnergy: parseInt(e.target.value) })}
-//         placeholder="65"
-//         type="number"
-//         className="input placeholder:text-gray-600 rounded-none input-bordered border-r  w-full input-xs"
-//       />
+  const deleteChoice = () =>
+    store.updateGlb({
+      ...currentGlb,
+      dialogue: {
+        ...currentGlb?.dialogue,
+        choices: choices.filter((choice) => choice.uuid !== props.uuid),
+      },
+    })
+  return (
+    <div className={cn("h-full  border-white border-opacity-10 border p-3 bg-base-300")}>
+      <label className="text-xs font-bold">Label:</label>
+      <input
+        defaultValue={props.label}
+        onChange={(e) => updateChoice({ label: e.target.value })}
+        placeholder="option"
+        className="input placeholder:text-gray-600 rounded-none input-bordered border-r  w-full input-xs"
+      />
 
-//       <label className="text-xs font-bold">Reward</label>
-//       <div className="grid grid-cols-2 gap-2">
-//         <select
-//           value={props.reward?.type}
-//           onChange={(e) => {
-//             updateChoice({ reward: { type: e.target.value as "money" | "energy" | "item" } })
-//           }}
-//           className="select rounded-none select-bordered w-full select-xs"
-//         >
-//           <option value={undefined}>None</option>
-//           {["item", "money", "energy"].map((k) => (
-//             <option key={k}>{k}</option>
-//           ))}
-//         </select>
-//         <input
-//           onChange={(e) => {
-//             updateChoice({
-//               reward: {
-//                 type: props.reward?.type,
-//                 amount: undefined,
-//                 item: undefined,
-//                 [props.reward?.type === "item" ? "item" : "amount"]: props.reward.item
-//                   ? e.target.value
-//                   : parseInt(e.target.value),
-//               },
-//             })
-//           }}
-//           defaultValue={props.reward?.type === "item" ? props.reward?.item : props.reward?.amount}
-//           key={props.reward?.type}
-//           type={props.reward?.type === "item" ? "text" : "number"}
-//           className="input placeholder:text-gray-600 rounded-none input-bordered  w-full input-xs"
-//         />
-//       </div>
-//       <div />
-//       <button
-//         onClick={() => store.removeChoice(props)}
-//         className="btn rounded-none btn-xs w-full btn-error btn-outline btn-square"
-//       >
-//         Delete
-//       </button>
-//     </div>
-//   )
-// }
+      <label className="text-xs ">Required Money:</label>
+      <input
+        min={0}
+        defaultValue={props.requiredMoney}
+        onChange={(e) => updateChoice({ requiredMoney: parseInt(e.target.value) })}
+        placeholder="80$"
+        type="number"
+        className="input mb-2 placeholder:text-gray-600 rounded-none input-bordered border-r  w-full input-xs"
+      />
+
+      <label className="text-xs">Required Item:</label>
+      <select
+        onChange={(e) => {
+          updateChoice({ requiredItem: e.target.value })
+        }}
+        value={props?.requiredItem}
+        className="select mb-2  rounded-none select-bordered w-full select-xs"
+      >
+        <option value={undefined}>None</option>
+        {store.glbs.map((k) => (
+          <option key={k.uuid} value={k.uuid}>
+            {k.name}
+          </option>
+        ))}
+      </select>
+
+      <label className="text-xs">Required Energy:</label>
+      <input
+        min={0}
+        max={100}
+        defaultValue={props.requiredEnergy}
+        onChange={(e) => updateChoice({ requiredEnergy: parseInt(e.target.value) })}
+        placeholder="65"
+        type="number"
+        className="input mb-2 placeholder:text-gray-600 rounded-none input-bordered border-r  w-full input-xs"
+      />
+
+      <label className="text-xs">Reward</label>
+      <div className="grid grid-cols-2 mb-2 gap-2">
+        <select
+          value={props.reward?.type}
+          onChange={(e) => {
+            updateChoice({ reward: { type: e.target.value as "money" | "energy" | "item" } })
+          }}
+          className="select rounded-none select-bordered w-full select-xs"
+        >
+          <option value={undefined}>None</option>
+          {["item", "money", "energy"].map((k) => (
+            <option key={k}>{k}</option>
+          ))}
+        </select>
+        <input
+          onChange={(e) => {
+            updateChoice({
+              reward: {
+                type: props.reward?.type,
+                amount: undefined,
+                item: undefined,
+                [props.reward?.type === "item" ? "item" : "amount"]: props.reward.item
+                  ? e.target.value
+                  : parseInt(e.target.value),
+              },
+            })
+          }}
+          defaultValue={props.reward?.type === "item" ? props.reward?.item : props.reward?.amount}
+          key={props.reward?.type}
+          type={props.reward?.type === "item" ? "text" : "number"}
+          className="input placeholder:text-gray-600 mb-2 rounded-none input-bordered  w-full input-xs"
+        />
+      </div>
+      <div />
+      <button
+        onClick={() => {
+          console.log(2)
+          deleteChoice()
+        }}
+        className="btn rounded-none btn-xs w-full btn-error btn-outline btn-square"
+      >
+        Delete
+      </button>
+    </div>
+  )
+}
 
 export function Settings() {
   const store = useGameConfigStore()
@@ -172,7 +188,7 @@ export function Settings() {
         ))}
       </div>
       <div className="divider my-0 col-span-2" />
-      <label className=" text-xs  mb-2">Scale: {currentGlb?.scale[0] ?? 1}</label>
+      <label className=" text-xs font-bold mb-2">Scale: {currentGlb?.scale[0] ?? 1}</label>
       <input
         type="range"
         value={currentGlb?.scale[0]}
@@ -230,6 +246,57 @@ export function Settings() {
               </button>
             </div>
           ))}
+        </>
+      )}
+
+      {currentGlb.type !== "hero" && (
+        <>
+          <div className="divider my-0 col-span-2" />
+
+          <label className=" text-xs font-bold  mb-2">Dialogue: </label>
+          <textarea
+            placeholder="This is a dialogue. You can write anything you want to show in the dialogue"
+            value={currentGlb?.dialogue?.content}
+            onChange={(e) =>
+              updateGlb({
+                ...currentGlb,
+                dialogue: {
+                  ...currentGlb.dialogue,
+                  content: e.target.value,
+                },
+              })
+            }
+            className="textarea placeholder:text-white placeholder:text-opacity-35 textarea-bordered rounded-none border-white border-opacity-10 w-full"
+          />
+
+          {currentGlb.dialogue?.choices?.map((choice) => <Option {...choice} key={choice.uuid} />)}
+          <button
+            onClick={() => {
+              const currentChoices = currentGlb?.dialogue?.choices ?? []
+              const uuid = new THREE.Object3D().uuid
+              updateGlb({
+                ...currentGlb,
+                dialogue: {
+                  ...currentGlb.dialogue,
+                  choices: [
+                    ...currentChoices,
+                    {
+                      label: "Option" + currentChoices.length,
+                      requiredMoney: undefined,
+                      requiredItem: undefined,
+                      requiredEnergy: undefined,
+                      reward: undefined,
+                      parent: currentGlb.uuid,
+                      uuid,
+                    },
+                  ],
+                },
+              })
+            }}
+            className="btn mb-4 btn-outline btn-warning btn-xs rounded-none border-white border-opacity-10 mt-2"
+          >
+            Add choice
+          </button>
         </>
       )}
     </div>

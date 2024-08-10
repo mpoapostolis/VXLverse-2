@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react"
 import * as THREE from "three"
 
 export function Camera() {
-  const { position, flying, setFlying, setPosition } = useEditor()
+  const { position, flying, setFlying } = useEditor()
   const stopThreshold = 20 // Distance threshold to stop the camera
   let pos: Vector3 = undefined
   const ref = useRef<[number, number, number]>([0, 0, 0])
@@ -29,7 +29,6 @@ export function Camera() {
       camera.position.copy(tempPosition)
     } else {
       setFlying(false)
-      setPosition(null)
     }
   })
   return <OrbitControls makeDefault target={ref.current} position={pos ?? [0, 0, 0]} />

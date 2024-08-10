@@ -32,7 +32,7 @@ function Edit() {
       </div>
       <div
         key={selected3dModel}
-        className={cn("w-96 border-l  h-screen border-opacity-10 border-white overflow-y-auto", {
+        className={cn("w-[30vw] border-l  h-screen border-opacity-10 border-white overflow-y-auto", {
           hidden: !selected3dModel,
           block: selected3dModel,
         })}

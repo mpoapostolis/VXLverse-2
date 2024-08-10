@@ -18,7 +18,7 @@ export type Choice = {
 
 type Dialogue = {
   content: string
-  divider?: string
+  choices?: Choice[]
 }
 
 export type GLBType = {

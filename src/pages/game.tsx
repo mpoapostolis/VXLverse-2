@@ -1,3 +1,4 @@
+import { useGameConfigStore } from "@/lib/game-store"
 import { Environment, KeyboardControls } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
 import { CuboidCollider, Physics } from "@react-three/rapier"
@@ -16,6 +17,8 @@ export const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 export function Game() {
   const [state, setState] = useState<"intro" | "game" | "clickToPlay">("intro")
   const store = useStore()
+
+  const gameConfStore = useGameConfigStore()
   const [died, setDied] = useState(0)
   const time = store.time % 4
   let timeSrc = "night"
@@ -143,7 +146,7 @@ export function Game() {
               </EcctrlAnimation>
             </Ecctrl>
           </KeyboardControls>
-          {store.glbs
+          {gameConfStore.glbs
             .filter((e) => e.scene === store.scene)
             .filter((e) => !store.inventory.includes(e.uuid))
             .map((glb) => (

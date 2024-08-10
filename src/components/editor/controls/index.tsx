@@ -20,9 +20,6 @@ export function Controls() {
       if (e.key.toLowerCase() === "r") {
         setMode("scale")
       }
-      if (e.key.toLowerCase() === " ") {
-        setFlying(true)
-      }
 
       if (e.shiftKey && e.key.toLowerCase() === "d") {
         store.removeGlb(currentGlb)
