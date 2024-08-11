@@ -44,6 +44,7 @@ export function Glb(
   }, [currentAnimation, animationsKeys])
 
   const onClick = () => {
+    if (!props?.dialogue?.content) return
     const currentChoice = store.choices.filter((choice) => choice.parent === props.uuid)
     store.setDialog({
       content: props?.dialogue?.content,

@@ -1,24 +1,24 @@
-import { useGameConfigStore } from "@/lib/game-store"
-import { Environment, KeyboardControls } from "@react-three/drei"
+import { GameGlb } from "@/components/glb"
+import { Hero } from "@/components/hero"
+import { useGame } from "@/hooks/useGame"
+import { Environment } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
-import { CuboidCollider, Physics } from "@react-three/rapier"
-import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from "ecctrl"
+import { Physics } from "@react-three/rapier"
+import { EcctrlJoystick } from "ecctrl"
 import { useEffect, useRef, useState } from "react"
 import { Dialogue } from "../components/dialogue"
-import { Glb } from "../components/glb"
-import { animationSet, characterURL, Hero, keyboardMap } from "../components/hero"
 import Lights from "../components/lights"
-import { allScenes, Scene } from "../components/scene"
+import { allScenes } from "../components/scene"
 import { SceneText } from "../components/sceneText"
 import { useStore } from "../lib/store"
 import { cn } from "../lib/utils"
 
 export const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 export function Game() {
-  const [state, setState] = useState<"intro" | "game" | "clickToPlay">("intro")
+  // const [state, setState] = useState<"intro" | "game" | "clickToPlay">("intro")
+  const [state, setState] = useState<"intro" | "game" | "clickToPlay">("game")
   const store = useStore()
-
-  const gameConfStore = useGameConfigStore()
+  const { data } = useGame()
   const [died, setDied] = useState(0)
   const time = store.time % 4
   let timeSrc = "night"
@@ -27,6 +27,9 @@ export function Game() {
   if (time === 3) timeSrc = "afternoon"
   if (time === 0) timeSrc = "night"
 
+  const scenes = data?.gameConf?.scenes
+  const currentScene = scenes?.find((s) => s?.uuid === store?.scene) ?? scenes?.at(0)
+  const glbs = data?.gameConf?.glbs?.filter((g) => g?.scene === currentScene?.uuid)
   useEffect(() => {
     ref?.current?.play().catch(() => {
       setState("clickToPlay")
@@ -49,6 +52,7 @@ export function Game() {
     </div>
   ) : state === "intro" ? (
     <video
+      muted
       ref={ref}
       id="introVideo"
       autoPlay
@@ -91,7 +95,7 @@ export function Game() {
               content: "Change location",
               divider: "Where do you want to go?",
               choices: allScenes
-                .filter((c) => c !== store.scene)
+                .filter((c) => c !== store?.scene)
                 .map((s) => ({
                   label: s,
                   onSelect: () => {
@@ -121,41 +125,25 @@ export function Game() {
           blur: store.dialog?.content,
         })}
       >
-        <fog attach="fog" args={["#000", 0, 30]} />
-        <Environment background preset="night" />
+        {/* <fog attach="fog" args={["#000", 0, 30]} /> */}
+        <Environment background preset={currentScene?.preset ?? "night"} />
         <Lights />
-        <Physics key={store.scene} timeStep="vary">
-          <CuboidCollider
-            onCollisionEnter={() => {
-              store.setSceneText("You died")
-              setDied(died + 1)
-            }}
-            args={[100, 1, 100]}
-            position={[0, -15, 0]}
-          />
-          <KeyboardControls map={keyboardMap}>
-            <Ecctrl
-              maxVelLimit={3}
-              onCollisionEnter={(e) => {
-                store.addItemToInventory(e.colliderObject.name)
-              }}
-              animated
-            >
-              <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
-                <Hero />
-              </EcctrlAnimation>
-            </Ecctrl>
-          </KeyboardControls>
-          {gameConfStore.glbs
-            .filter((e) => e.scene === store.scene)
-            .filter((e) => !store.inventory.includes(e.uuid))
-            .map((glb) => (
-              <Glb key={glb.uuid} {...glb} />
-            ))}
-          <Scene />
+        <Physics debug key={store.scene} timeStep="vary">
+          {/* <CuboidCollider */}
+          {/*   onCollisionEnter={() => { */}
+          {/*     store.setSceneText("You died") */}
+          {/*     setDied(died + 1) */}
+          {/*   }} */}
+          {/*   args={[100, 1, 100]} */}
+          {/*   position={[0, -15, 0]} */}
+          {/* /> */}
+          <Hero />
+          {glbs
+            ?.filter((glb) => glb.type !== "hero")
+            ?.filter((e) => e?.scene === currentScene.uuid)
+            .map((glb) => <GameGlb key={glb.uuid} {...glb} />)}
         </Physics>
       </Canvas>
     </div>
   )
 }
-export { animationSet, characterURL }
