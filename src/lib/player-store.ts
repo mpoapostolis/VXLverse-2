@@ -1,5 +1,6 @@
 "use client"
 
+import { Vector3 } from "three"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
@@ -19,6 +20,8 @@ export type PlayerStore = {
   money: number
   energy: number
   time: number
+  goTo?: Vector3
+  setGoTo: (gotTo: Vector3) => void
   inventory: Inventory
   selectedGlb?: string
   settingsExpanded: boolean
@@ -44,6 +47,7 @@ export const usePlayerStore = create(
       money: 0,
       energy: 100,
       time: 1,
+      setGoTo: (goTo) => set({ goTo }),
       inventory: [],
       settingsExpanded: false,
       transformMode: "translate",

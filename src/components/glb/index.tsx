@@ -4,8 +4,10 @@ Command: npx gltfjsx@6.2.16 -t ghost.glb
 */
 
 import { GLBType } from "@/lib/game-store"
+import { usePlayerStore } from "@/lib/player-store"
 import { useStore } from "@/lib/store"
 import { useAnimations, useGLTF } from "@react-three/drei"
+import { ThreeEvent } from "@react-three/fiber"
 import { RigidBody } from "@react-three/rapier"
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
@@ -26,7 +28,7 @@ export function Glb(
   const group = useRef<THREE.Group>()
   const { scene, animations } = useGltfMemo(props.url)
   const { actions } = useAnimations(animations, group)
-
+  const playerStore = usePlayerStore()
   useEffect(() => {
     const [_, first] = Object.keys(actions)
     actions[first]?.play()
@@ -43,7 +45,8 @@ export function Glb(
     if (currentAnimation) actions[currentAnimation]?.play()
   }, [currentAnimation, animationsKeys])
 
-  const onClick = () => {
+  const onClick = (e: ThreeEvent<MouseEvent>) => {
+    playerStore.setGoTo(e.point)
     if (!props?.dialogue?.content) return
     const currentChoice = store.choices.filter((choice) => choice.parent === props.uuid)
     store.setDialog({
