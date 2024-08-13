@@ -24,6 +24,7 @@ type Dialogue = {
 }
 
 export type GLBType = {
+  initialize: (scenes: Scene[], glbs: GLBType[]) => void
   uuid: string
   name: string
   glbName: string
@@ -56,6 +57,7 @@ type Scene = {
 export type GameConfigStore = {
   scenes: Scene[]
   choices: Choice[]
+  initialize: (store?: Partial<GameConfigStore>) => void
   glbs: GLBType[]
   addScene: (scene: Scene) => void
   updateScene: (scene: Scene) => void
@@ -76,6 +78,7 @@ export const useGameConfigStore = create(
       scenes: [],
       choices: [],
       glbs: [],
+      initialize: (store) => set((state) => ({ ...state, ...store })),
       fly: false,
       setFly: (fly) => set({ fly }),
       addScene: (scene) => set((state) => ({ scenes: [...state.scenes, scene] })),

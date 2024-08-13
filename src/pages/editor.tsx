@@ -4,6 +4,7 @@ import { Controls } from "@/components/editor/controls"
 import { EditorProvider, useEditor } from "@/components/editor/provider"
 import { SceneTree } from "@/components/editor/sceneTree"
 import { Settings } from "@/components/editor/settings"
+import { useGame } from "@/hooks/useGame"
 import { useGameConfigStore } from "@/lib/game-store"
 import { Suspense } from "react"
 import { cn } from "../lib/utils"
@@ -12,6 +13,7 @@ function Edit() {
   const store = useGameConfigStore()
   const { selectedScene, selected3dModel } = useEditor()
 
+  useGame()
   const currentScene = store.scenes.find((scene) => scene.uuid === selectedScene)
   const currentGlb = store.glbs.find((glb) => glb.uuid === selected3dModel)
   return (

@@ -76,6 +76,7 @@ export const usePlayerStore = create(
     {
       name: "player-store",
       version: 1.0,
+      partialize: (s) => ({ ...s, goTo: undefined }),
     },
   ),
 )
