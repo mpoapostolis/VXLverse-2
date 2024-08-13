@@ -1,4 +1,5 @@
 import { useGames } from "@/hooks/useGames"
+import { useGameConfigStore } from "@/lib/game-store"
 import { getClientPb } from "@/lib/pb"
 import { cn } from "@/lib/utils"
 import { Link, useNavigate } from "react-router-dom"
@@ -61,6 +62,7 @@ export function Main() {
   const { data: games, mutate } = useGames(0)
 
   const navigate = useNavigate()
+  const store = useGameConfigStore()
 
   return (
     <div key={isLogged.toString()}>
@@ -216,14 +218,8 @@ export function Main() {
                       >
                         Delete
                       </button>
-                      <Link to={`/editor/${game?.id}`}>
-                        <button
-                          onClick={async (e) => {
-                            e.stopPropagation()
-                            navigate(`/editor/${game?.id}`)
-                          }}
-                          className="btn btn-xs btn-outline btn-info w-full"
-                        >
+                      <Link onClick={() => store.clearStore()} to={`/editor/${game?.id}`}>
+                        <button onClick={async (e) => {}} className="btn btn-xs btn-outline btn-info w-full">
                           Edit
                         </button>
                       </Link>

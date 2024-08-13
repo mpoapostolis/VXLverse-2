@@ -57,6 +57,7 @@ type Scene = {
 export type GameConfigStore = {
   scenes: Scene[]
   choices: Choice[]
+  clearStore: () => void
   initialize: (store?: Partial<GameConfigStore>) => void
   glbs: GLBType[]
   addScene: (scene: Scene) => void
@@ -78,6 +79,12 @@ export const useGameConfigStore = create(
       scenes: [],
       choices: [],
       glbs: [],
+      clearStore: () =>
+        set({
+          scenes: [],
+          choices: [],
+          glbs: [],
+        }),
       initialize: (store) => set((state) => ({ ...state, ...store })),
       fly: false,
       setFly: (fly) => set({ fly }),
