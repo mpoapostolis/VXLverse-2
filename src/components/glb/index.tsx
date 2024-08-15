@@ -9,6 +9,7 @@ import { useStore } from "@/lib/store"
 import { useAnimations, useGLTF } from "@react-three/drei"
 import { ThreeEvent } from "@react-three/fiber"
 import { RigidBody } from "@react-three/rapier"
+import { useGame } from "ecctrl"
 import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { SkeletonUtils } from "three/examples/jsm/Addons.js"
@@ -45,6 +46,8 @@ export function Glb(
     if (currentAnimation) actions[currentAnimation]?.play()
   }, [currentAnimation, animationsKeys])
 
+  const circleRef = useRef<THREE.Mesh>(null)
+  const date = useRef(0)
   const onClick = (e: ThreeEvent<MouseEvent>) => {
     playerStore.setGoTo(e.point)
     if (!props?.dialogue?.content) return
@@ -95,10 +98,38 @@ export function Glb(
     })
   }
 
+  const setMoveToPoint = useGame((state) => state.setMoveToPoint)
   return (
-    <group onClick={onClick} uuid={props.uuid} ref={group} {...commonProps} dispose={null}>
-      <primitive object={scene} dispose={null} />
-    </group>
+    <>
+      <mesh ref={circleRef} rotation-x={-Math.PI / 2}>
+        <ringGeometry args={[0.2, 0.3]} />
+        <meshBasicMaterial color={0xffffff} transparent opacity={1} />
+      </mesh>
+      <group
+        onPointerMove={({ point }) => {
+          if (!circleRef?.current) return
+          circleRef.current.position.z = point.z
+          circleRef.current.position.x = point.x
+          circleRef.current.position.y = point.y + 0.01
+        }}
+        onPointerDown={() => {
+          date.current = Date.now()
+        }}
+        onPointerUp={({ point }) => {
+          if (Date.now() - date.current < 200) {
+            // a quick click
+            setMoveToPoint(point)
+          }
+        }}
+        onClick={onClick}
+        uuid={props.uuid}
+        ref={group}
+        {...commonProps}
+        dispose={null}
+      >
+        <primitive object={scene} dispose={null} />
+      </group>
+    </>
   )
 }
 
