@@ -12,19 +12,6 @@ import { useEffect, useRef } from "react"
 import { Group, Quaternion, Vector3 } from "three"
 import { useGltfMemo } from "../glb"
 
-const animationSet: Record<string, string> = {
-  idle: "",
-  walk: "",
-  run: "",
-  jump: "",
-  jumpIdle: "",
-  jumpLand: "",
-  fall: "", // This is for falling from high sky
-  action1: "",
-  action2: "",
-  action3: "",
-}
-
 export function Glb(props: JSX.IntrinsicElements["group"] & GLBType) {
   const group = useRef<Group>()
   const { scene, animations } = useGltfMemo(props.url)
@@ -49,22 +36,9 @@ export function Glb(props: JSX.IntrinsicElements["group"] & GLBType) {
   const currentAnimation = goTo ? props.animationSet.walk : props.animationSet.idle
 
   useEffect(() => {
-    Object.keys(actions).forEach((key) => {
-      actions[key]?.stop()
-    })
-    if (currentAnimation) actions[currentAnimation]?.play()
+    if (currentAnimation) actions[currentAnimation]?.reset().fadeIn(0.5)?.play()
   }, [currentAnimation, animationsKeys, goTo])
 
-  // const currentAnimation = rb?.isMoving ? animationSet?.walk : animationSet?.idle
-  // useEffect(() => {
-  //   if (!actions || !currentAnimation) return
-  //   actions[currentAnimation]?.reset().fadeIn(0.5)?.play()
-  //   return () => {
-  //     if (!actions || !currentAnimation) return
-  //     actions[currentAnimation]?.fadeOut(0.5)
-  //   }
-  // }, [actions, currentAnimation])
-  //
   useEffect(() => {
     if (!rb) return
     if (!goTo) return
@@ -92,35 +66,44 @@ export function Glb(props: JSX.IntrinsicElements["group"] & GLBType) {
       true,
     )
   }, [goTo, rb, pos, scale, animations])
-  const [x, y, z] = goTo
+  const [x, y, z] = goTo ?? []
   return (
     <group ref={group}>
-      <RigidBody name="stop" position={[x, y + 0.2, z]} scale={props.scale} type="fixed">
-        <mesh rotation-x={-Math.PI / 2}>
-          <ringGeometry args={[0.4, 0.6]} />
-          <meshBasicMaterial color={0xff00ff} transparent opacity={1} />
-        </mesh>
-
-        {/* <CapsuleCollider args={[1, 0.1]} position={[0, 2, 0]} /> */}
-      </RigidBody>
+      {goTo && (
+        <>
+          <mesh position={[x, y + 0.4, z]} rotation-x={-Math.PI / 2}>
+            <ringGeometry args={[scale * 0.4, scale * 0.6]} />
+            <meshBasicMaterial color={0xff00ff} transparent opacity={1} />
+          </mesh>
+          <RigidBody colliders={false} position={[x, y, z]} scale={props.scale} type="fixed">
+            <CapsuleCollider name="stop" args={[1, 1]} />
+          </RigidBody>
+        </>
+      )}
 
       <OrbitControls makeDefault />
-      <RigidBody colliders={false} friction={0} lockRotations ref={rigidBodyRef} position={props.position}>
+      <RigidBody
+        gravityScale={scale * 3}
+        colliders={false}
+        friction={0}
+        softCcdPrediction={0}
+        lockRotations
+        ref={rigidBodyRef}
+        restitution={0}
+        position={props.position}
+      >
         <CapsuleCollider
           friction={0}
           onCollisionEnter={(e) => {
-            if (e.colliderObject.name === "stop") {
-              alert("Stop")
-              setMoveToPoint(null)
-              rb?.setLinvel(
-                {
-                  x: 0,
-                  y: 0,
-                  z: 0,
-                },
-                true,
-              )
-            }
+            setMoveToPoint(null)
+            rb?.setLinvel(
+              {
+                x: 0,
+                y: 0,
+                z: 0,
+              },
+              true,
+            )
           }}
           scale={scale}
           args={[1, 1]}

@@ -142,7 +142,7 @@ export function GameGlb(
     },
 ) {
   return (
-    <RigidBody name={props.type === "misc" ? props.uuid : undefined} type="fixed" colliders="trimesh">
+    <RigidBody friction={0} type="fixed" colliders="trimesh">
       <Glb {...props} />
     </RigidBody>
   )

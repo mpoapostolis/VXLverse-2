@@ -129,7 +129,7 @@ export function Game() {
         {/* <fog attach="fog" args={["#000", 0, 30]} /> */}
         <Environment background preset={currentScene?.preset ?? "night"} />
         <Lights />
-        <Physics debug key={store.scene} timeStep="vary">
+        <Physics key={store.scene} timeStep="vary">
           <CuboidCollider
             onCollisionEnter={() => {
               store.setSceneText("You died")
