@@ -127,11 +127,12 @@ const debouncedSave = debounce(async (state: GameConfigStore) => {
   const { scenes, glbs } = state
   const pb = getClientPb()
   const id = window?.location.pathname.split("/")[2]
-  await pb.collection("games").update(id, {
-    gameConf: {
-      scenes,
-      glbs,
-    },
-  })
+  if (id)
+    await pb.collection("games").update(id, {
+      gameConf: {
+        scenes,
+        glbs,
+      },
+    })
 }, 2000)
 useGameConfigStore.subscribe(debouncedSave)

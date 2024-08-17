@@ -14,7 +14,7 @@ import { useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 import { SkeletonUtils } from "three/examples/jsm/Addons.js"
 
-function useGltfMemo(url: string) {
+export function useGltfMemo(url: string) {
   const gltf = useGLTF(url)
   const scene = useMemo(() => SkeletonUtils.clone(gltf.scene), [gltf.scene])
   return { ...gltf, animations: [...gltf.animations], scene: scene }
@@ -23,6 +23,7 @@ function useGltfMemo(url: string) {
 export function Glb(
   props: JSX.IntrinsicElements["group"] &
     GLBType & {
+      heroScale: number
       isEdit?: boolean
     },
 ) {
@@ -102,7 +103,7 @@ export function Glb(
   return (
     <>
       <mesh ref={circleRef} rotation-x={-Math.PI / 2}>
-        <ringGeometry args={[0.2, 0.3]} />
+        <ringGeometry args={[props.heroScale * 0.4, props.heroScale * 0.6]} />
         <meshBasicMaterial color={0xffffff} transparent opacity={1} />
       </mesh>
       <group
@@ -110,7 +111,7 @@ export function Glb(
           if (!circleRef?.current) return
           circleRef.current.position.z = point.z
           circleRef.current.position.x = point.x
-          circleRef.current.position.y = point.y + 0.01
+          circleRef.current.position.y = point.y + 0.2
         }}
         onPointerDown={() => {
           date.current = Date.now()
@@ -136,6 +137,7 @@ export function Glb(
 export function GameGlb(
   props: JSX.IntrinsicElements["group"] &
     GLBType & {
+      heroScale: number
       isEdit?: boolean
     },
 ) {

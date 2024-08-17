@@ -36,6 +36,7 @@ export function Game() {
     })
   }, [])
 
+  const hero = data?.gameConf?.glbs?.find((e) => e.type === "hero")
   const ref = useRef<HTMLVideoElement>(null)
 
   return state === "clickToPlay" ? (
@@ -141,7 +142,7 @@ export function Game() {
           {glbs
             ?.filter((glb) => glb.type !== "hero")
             ?.filter((e) => e?.scene === currentScene.uuid)
-            .map((glb) => <GameGlb key={glb.uuid} {...glb} />)}
+            .map((glb) => <GameGlb heroScale={hero?.scale?.at(0)} key={glb.uuid} {...glb} />)}
         </Physics>
       </Canvas>
     </div>

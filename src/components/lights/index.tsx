@@ -1,3 +1,7 @@
 export default function Lights() {
-  return <>{/* <ambientLight intensity={0.2} /> */}</>
+  return (
+    <>
+      <ambientLight intensity={0.8} />
+    </>
+  )
 }
