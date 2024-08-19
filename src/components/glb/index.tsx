@@ -23,7 +23,7 @@ export function useGltfMemo(url: string) {
 export function Glb(
   props: JSX.IntrinsicElements["group"] &
     GLBType & {
-      heroScale: number
+      heroScale?: number
       isEdit?: boolean
     },
 ) {
@@ -107,22 +107,22 @@ export function Glb(
         <meshBasicMaterial color={0xffffff} transparent opacity={1} />
       </mesh>
       <group
-        onPointerMove={({ point }) => {
-          if (!circleRef?.current) return
-          circleRef.current.position.z = point.z
-          circleRef.current.position.x = point.x
-          circleRef.current.position.y = point.y + 0.2
-        }}
-        onPointerDown={() => {
-          date.current = Date.now()
-        }}
-        onPointerUp={({ point }) => {
-          if (Date.now() - date.current < 200) {
-            // a quick click
-            setMoveToPoint(point)
-          }
-        }}
-        onClick={onClick}
+        // onPointerMove={({ point }) => {
+        //   if (!circleRef?.current) return
+        //   circleRef.current.position.z = point.z
+        //   circleRef.current.position.x = point.x
+        //   circleRef.current.position.y = point.y + 0.2
+        // }}
+        // onPointerDown={() => {
+        //   date.current = Date.now()
+        // }}
+        // onPointerUp={({ point }) => {
+        //   if (Date.now() - date.current < 200) {
+        //     // a quick click
+        //     setMoveToPoint(point)
+        //   }
+        // }}
+        // onClick={onClick}
         uuid={props.uuid}
         ref={group}
         {...commonProps}
@@ -137,12 +137,20 @@ export function Glb(
 export function GameGlb(
   props: JSX.IntrinsicElements["group"] &
     GLBType & {
-      heroScale: number
+      heroScale?: number
       isEdit?: boolean
     },
 ) {
   return (
-    <RigidBody friction={0} type="fixed" colliders="trimesh">
+    <RigidBody
+      friction={0}
+      name={props.type}
+      userData={{
+        ...props,
+      }}
+      type="fixed"
+      colliders="trimesh"
+    >
       <Glb {...props} />
     </RigidBody>
   )

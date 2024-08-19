@@ -2,7 +2,7 @@ import { useEditor } from "@/components/editor/provider"
 import { cn } from "@/lib/utils"
 import { DragEvent } from "react"
 
-export function ModelGrid() {
+export function ModelGrid(props: { id?: string }) {
   const cc0 = "https://creativecommons.org/publicdomain/zero/1.0/"
   const ccBy3 = "https://creativecommons.org/licenses/by/3.0"
   const { data, isLoading } = useEditor()

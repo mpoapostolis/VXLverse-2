@@ -1,3 +1,4 @@
+import { useEditor } from "@/components/editor/provider"
 import { GameConfigStore, useGameConfigStore } from "@/lib/game-store"
 import { getClientPb } from "@/lib/pb"
 import { useEffect } from "react"
@@ -17,16 +18,18 @@ export function useGame() {
   const store = useGameConfigStore()
   const pb = getClientPb()
   const params = useParams()
-  const data = useSWR(
+  const res = useSWR(
     params.id && ["/games", params.id],
     async () => await pb.collection("games").getOne<Game>(params.id),
   )
+  const { setSelectedScene } = useEditor()
   useEffect(() => {
-    store.initialize(data?.data?.gameConf)
-  }, [data?.data])
+    store.initialize(res?.data?.gameConf)
+    setSelectedScene(res?.data?.gameConf?.scenes?.at(0)?.uuid)
+  }, [res?.data, setSelectedScene])
   return {
-    data: data?.data,
-    isLoading: !data?.data && !data?.error,
-    isError: data?.error,
+    data: res?.data,
+    isLoading: !res?.data && !res?.error,
+    isError: res?.error,
   }
 }

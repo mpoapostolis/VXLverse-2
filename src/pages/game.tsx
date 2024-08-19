@@ -3,7 +3,7 @@ import { Hero } from "@/components/hero"
 import { useGame } from "@/hooks/useGame"
 import { Environment } from "@react-three/drei"
 import { Canvas } from "@react-three/fiber"
-import { CuboidCollider, Physics } from "@react-three/rapier"
+import { Physics } from "@react-three/rapier"
 import { EcctrlJoystick } from "ecctrl"
 import { useEffect, useRef, useState } from "react"
 import { Dialogue } from "../components/dialogue"
@@ -129,15 +129,7 @@ export function Game() {
         {/* <fog attach="fog" args={["#000", 0, 30]} /> */}
         <Environment background preset={currentScene?.preset ?? "night"} />
         <Lights />
-        <Physics key={store.scene} timeStep="vary">
-          <CuboidCollider
-            onCollisionEnter={() => {
-              store.setSceneText("You died")
-              setDied(died + 1)
-            }}
-            args={[100, 1, 100]}
-            position={[0, -15, 0]}
-          />
+        <Physics debug key={store.scene} timeStep="vary">
           <Hero />
           {glbs
             ?.filter((glb) => glb.type !== "hero")

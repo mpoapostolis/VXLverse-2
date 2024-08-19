@@ -7,20 +7,33 @@ import { Settings } from "@/components/editor/settings"
 import { useGame } from "@/hooks/useGame"
 import { useGameConfigStore } from "@/lib/game-store"
 import { Suspense } from "react"
-import { cn } from "../lib/utils"
 
 function Edit() {
   const store = useGameConfigStore()
   const { selectedScene, selected3dModel } = useEditor()
 
   useGame()
-  const currentScene = store.scenes.find((scene) => scene.uuid === selectedScene)
-  const currentGlb = store.glbs.find((glb) => glb.uuid === selected3dModel)
   return (
-    <div key={selectedScene} className="w-screen  h-screen flex">
+    <div key={selectedScene} className="w-screen border  h-screen flex">
       <SceneTree />
 
-      <div className="h-screen flex flex-col w-full relative">
+      <div className="h-screen flex flex-col  w-full relative">
+        <button
+          // @ts-ignore
+          onClick={() => document.getElementById("my_modal_3")?.showModal()}
+          className="z-50 absolute btn-warning right-4 bg-base-200 bottom-4 btn-outline btn  rounded-none"
+        >
+          Add 3d Model{" "}
+        </button>
+        <dialog id="my_modal_3" className="modal w-full border grid place-items-center">
+          <div className="modal-box w-11/12 max-w-[90vw]">
+            <Assets />
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+
         {selected3dModel && <Controls />}
         {store.scenes.length ? (
           <EditorCanvas />
@@ -29,17 +42,11 @@ function Edit() {
             Create a scene to start adding models
           </div>
         )}
-
-        {currentScene && <Assets />}
       </div>
-      <div
-        key={selected3dModel}
-        className={cn("w-[30vw] border-l  h-screen border-opacity-10 border-white overflow-y-auto", {
-          hidden: !selected3dModel,
-          block: selected3dModel,
-        })}
-      >
-        <Suspense>{currentGlb && <Settings />}</Suspense>
+      <div key={selected3dModel} className="w-[30vw] border-l  h-screen border-opacity-10 border-white overflow-y-auto">
+        <Suspense>
+          <Settings />
+        </Suspense>
       </div>
     </div>
   )

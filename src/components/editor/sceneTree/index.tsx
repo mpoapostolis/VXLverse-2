@@ -1,5 +1,5 @@
 import { TreeFile, TreeFolder } from "@/components/tree"
-import { useGameConfigStore } from "@/lib/game-store"
+import { defaultHero, useGameConfigStore } from "@/lib/game-store"
 import { cn } from "@/lib/utils"
 import { PresetsType } from "@react-three/drei/helpers/environment-assets"
 import { ChangeEvent, FormEvent } from "react"
@@ -47,6 +47,7 @@ export function SceneList() {
             <ul>
               {store.glbs
                 .filter((glb) => glb.scene === scene.uuid)
+                .filter((glb) => glb.type !== "hero")
                 .map((glb) => (
                   <TreeFile
                     key={glb.uuid}
@@ -97,7 +98,7 @@ export function SceneTree() {
     newSceneName,
     setNewSceneName,
   } = useEditor()
-  const hero = store.glbs.find((glb) => glb.type === "hero")
+  const hero = store.glbs.find((glb) => glb.type === "hero") ?? defaultHero
   const currentScene = store.scenes.find((scene) => scene.uuid === selectedScene)
 
   return (
@@ -119,11 +120,10 @@ export function SceneTree() {
               {hero?.uuid && (
                 <TreeFile
                   onClick={() => {
-                    setSelectedScene(hero.scene)
                     setSelected3dModel(hero.uuid)
                     setPosition(hero.position)
                   }}
-                  selected={hero.uuid === selected3dModel}
+                  selected={!selected3dModel}
                 >
                   Hero
                 </TreeFile>

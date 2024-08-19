@@ -4,7 +4,7 @@ import { ChangeEvent } from "react"
 export function ModelSearch() {
   const { category, changeSearchTerm, isLoading, page, setPage, totalPages } = useEditor()
   return (
-    <div className="w-full border-b h-10 border-opacity-10 border-white sticky p-4 py-2 top-0 flex px-4 items-center gap-2">
+    <div className="w-full  border-b h-10 border-opacity-10 border-white sticky p-4 py-2 top-0 flex px-4 items-center gap-2">
       <input
         key={category}
         onChange={(e: ChangeEvent<HTMLInputElement>) => changeSearchTerm(e.target.value)}

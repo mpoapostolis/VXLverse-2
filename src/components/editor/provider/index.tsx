@@ -88,7 +88,6 @@ export const EditorProvider: FC<{ children: React.ReactNode }> = ({ children }) 
       glbName: parsedData?.name,
       position: position ?? [0, 0, 0],
       animationSet: {},
-
       shownTime: {
         morning: true,
         afternoon: true,
@@ -100,7 +99,7 @@ export const EditorProvider: FC<{ children: React.ReactNode }> = ({ children }) 
       scale: [1, 1, 1],
       rotation: [0, 0, 0],
       scene: selectedScene,
-      type: "npc",
+      type: parsedData?.type,
     })
     setSelected3dModel(uuid)
   }

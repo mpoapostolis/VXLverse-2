@@ -1,9 +1,10 @@
-import { Choice, GLBType, useGameConfigStore } from "@/lib/game-store"
+import { Choice, defaultHero, GLBType, useGameConfigStore } from "@/lib/game-store"
 import { cn } from "@/lib/utils"
 import { useGLTF } from "@react-three/drei"
 import * as THREE from "three"
+import { Assets } from "../assets"
 import { useEditor } from "../provider"
-const heroActions = ["idle", "walk", "run", "jump", "action1"]
+const heroActions = ["idle", "walk", "run", "jump", "jumpIdle", "action1"]
 const npcActions = ["idle", "onInteract"]
 
 function Option(props: Choice) {
@@ -111,7 +112,6 @@ function Option(props: Choice) {
       <div />
       <button
         onClick={() => {
-          console.log(2)
           deleteChoice()
         }}
         className="btn rounded-none btn-xs w-full btn-error btn-outline btn-square"
@@ -125,8 +125,8 @@ function Option(props: Choice) {
 export function Settings() {
   const store = useGameConfigStore()
   const { selected3dModel } = useEditor()
-  const currentGlb = store.glbs.find((k) => k.uuid === selected3dModel)
-
+  const currentGlb = store.glbs.find((k) => k.uuid === selected3dModel) ?? defaultHero
+  console.log(currentGlb)
   const updateGlb = (glb: Partial<GLBType>) => store.updateGlb({ ...currentGlb, ...glb })
   const { animations } = useGLTF(currentGlb.url)
   const hero = store.glbs.find((k) => k.type === "hero")
@@ -162,7 +162,29 @@ export function Settings() {
           <option value="misc">misc</option>
         </select>
       </div>
+
       <div className="divider my-0 col-span-2" />
+      <div className="flex flex-col   w-full  gap-2">
+        <img src={currentGlb?.thumbnail} alt="thumbnail" className="w-full h-40 object-cover" />
+        <button
+          className="btn btn-xs btn-outline border-white border-opacity-10 rounded-none"
+          // @ts-ignore
+          onClick={() => document.getElementById("my_modal_3")?.showModal()}
+        >
+          select 3d model
+        </button>
+
+        <dialog id="my_modal_3" className="modal w-full border grid place-items-center">
+          <div className="modal-box w-11/12 max-w-[90vw]">
+            <Assets />
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+      </div>
+      <div className="divider my-0 col-span-2" />
+
       <label className="text-xs font-bold">Shown time:</label>
       <div className="max-h-40 overflow-auto grid gap-2 grid-cols-2">
         {["morning", "noon", "afternoon", "evening", "night"].map((time) => (

@@ -24,7 +24,6 @@ type Dialogue = {
 }
 
 export type GLBType = {
-  initialize: (scenes: Scene[], glbs: GLBType[]) => void
   uuid: string
   name: string
   glbName: string
@@ -136,3 +135,31 @@ const debouncedSave = debounce(async (state: GameConfigStore) => {
     })
 }, 2000)
 useGameConfigStore.subscribe(debouncedSave)
+
+export const defaultHero = {
+  uuid: "f4fc3dda-b3ac-4d37-ad4c-939a821d5b6c",
+  url: "https://api.findasb.com/api/files/wz6gpgqnbbei1s9/vf6xpryuj5qgj81/scene_BErqmbOeAg.glb",
+  name: "Man",
+  glbName: "Man",
+  scene: "",
+  position: [0, 40, 0] as [number, number, number],
+  animationSet: {
+    walk: "HumanArmature|Man_Walk",
+    idle: "HumanArmature|Man_Idle",
+    run: "HumanArmature|Man_Run",
+    jump: "HumanArmature|Man_Jump",
+    jumpIdle: "HumanArmature|Man_Jump",
+    action1: "HumanArmature|Man_SwordSlash",
+  },
+  shownTime: {
+    morning: true,
+    afternoon: true,
+    evening: true,
+    night: true,
+    noon: true,
+  },
+  thumbnail: "https://api.findasb.com/api/files/wz6gpgqnbbei1s9/vf6xpryuj5qgj81/thumbnail_XSJA29eBrc.webp",
+  scale: [1, 1, 1] as [number, number, number],
+  rotation: [0, 0, 0] as [number, number, number],
+  type: "hero",
+} as GLBType
